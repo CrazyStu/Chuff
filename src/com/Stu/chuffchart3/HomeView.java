@@ -19,11 +19,11 @@ public class HomeView extends View {
 	private int daysDone = 30;
 	private int hoursLeft =10;
 	private int hoursDone = 10;
-	private String myTitle1="I Can't Wait...";
-	private String homeTitle2 = "NOPE";
-	private String size = "NOPE";
-	private String homeStart = "NOPE";
-	private String homeEnd = "NOPE";
+	private String myTitle1="I Can't Wait";
+	private String homeTitle2 = "NOPE1";
+	private String size = "NOPE2";
+	private String homeStart = "01/01/2001";
+	private String homeEnd = "10/10/2010";
 	private Paint title1Paint;
 	private Paint title2Paint;
 	private Paint daysLeftPaint;
@@ -36,12 +36,14 @@ public class HomeView extends View {
 	private Rect tangle;
 	private int percent=50;
 	private float blueBoxSize;
-	private Context context;
+	private Context myContext;
+
 	
         public HomeView(Context context, AttributeSet atts) {
 		super(context);
-		context=MainActivity.context;
+		myContext=MainActivity.context;
 		Bundle bund = HomeFragment.getInfo();
+		Log.i("homeTitle2", bund.getString("homeTitle"));
 		homeTitle2 = bund.getString("homeTitle");
 		homeStart = bund.getString("homeStartDate");
 		homeEnd = bund.getString("homeEndDate");
@@ -50,7 +52,7 @@ public class HomeView extends View {
 		refresh();
         }     
         public void loadBMP(){      		
-        	progBar=BitmapFactory.decodeResource(context.getResources(), R.drawable.progress);
+        	progBar=BitmapFactory.decodeResource(myContext.getResources(), R.drawable.progress);
         	progBar=Bitmap.createBitmap(progBar);
         }
         @Override
@@ -63,7 +65,7 @@ public class HomeView extends View {
         	myCanvas.drawText(percent+"%", (screenW/16),  screenH-6, percentRemainingPaint);
         	myCanvas.drawText(myTitle1, screenW/8+10,  (int)(screenH*0.05), title1Paint);
         	myCanvas.drawText(homeTitle2, screenW-10, (int)(screenH*0.12), title2Paint);
-        	myCanvas.drawText(size, screenW-10, (int)(screenH*0.06), title2Paint);
+        	myCanvas.drawText(size, screenW-90, (int)(screenH*0.06), percentRemainingPaint);
         	myCanvas.drawBitmap(progBar,null,tangle, null);
           	if(daysDone==0){
           		myCanvas.drawText(hoursDone+" Hours Done", screenW-10, (int)(screenH*0.9), daysDonePaint);	
@@ -94,6 +96,7 @@ public class HomeView extends View {
     		size = w+"x"+h;
     		blueBoxSize = screenH*((float)percent/100);
     		tangle = new Rect(0, 0, screenW/8, screenH);
+    		setText();
     	}
         private void setText(){
         	title1Paint= new Paint();
@@ -104,27 +107,27 @@ public class HomeView extends View {
     		title1Paint.setAntiAlias(true);
     		
         	title2Paint= new Paint();
-    		title2Paint.setTextSize(screenH/12);
+    		title2Paint.setTextSize(screenH/17);
 			title2Paint.setTextAlign(Paint.Align.RIGHT);
     		title2Paint.setColor(Color.BLACK);
     		title2Paint.setFakeBoldText(true);
     		title2Paint.setAntiAlias(true);
                 	
         	daysLeftPaint= new Paint();
-    		daysLeftPaint.setTextSize(screenH/10);
+    		daysLeftPaint.setTextSize(screenH/13);
 			daysLeftPaint.setTextAlign(Paint.Align.RIGHT);
     		daysLeftPaint.setColor(Color.BLACK);
     		daysLeftPaint.setFakeBoldText(true);
     		daysLeftPaint.setAntiAlias(true);
     		
         	daysDonePaint= new Paint();
-    		daysDonePaint.setTextSize(screenH/12);
+    		daysDonePaint.setTextSize(screenH/17);
 			daysDonePaint.setTextAlign(Paint.Align.RIGHT);
     		daysDonePaint.setColor(Color.BLACK);
     		daysDonePaint.setAntiAlias(true);
     		
     		percentRemainingPaint= new Paint();
-    		percentRemainingPaint.setTextSize(screenH/30);
+    		percentRemainingPaint.setTextSize(screenH/39);
 			percentRemainingPaint.setTextAlign(Paint.Align.CENTER);
     		percentRemainingPaint.setColor(Color.BLACK);
     		percentRemainingPaint.setFakeBoldText(true);

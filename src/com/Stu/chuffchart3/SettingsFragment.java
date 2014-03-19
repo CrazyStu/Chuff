@@ -19,7 +19,6 @@ public class SettingsFragment extends ListFragment{
 	public static String settingStartDate = "noDate";
 	public static String settingEndDate = "noDate";
 	SelectItemListener mCallback;
-
 	private myDatabaseAdapter db = null;
 	private Cursor myCursor;
 	private Context context;
