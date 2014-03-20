@@ -1,7 +1,6 @@
 package com.Stu.chuffchart3;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -21,7 +20,6 @@ public class SettingsFragment extends ListFragment{
 	SelectItemListener mCallback;
 	private myDatabaseAdapter db = null;
 	private Cursor myCursor;
-	private Context context;
 	private SimpleCursorAdapter myCAdapter;
 	private String[] colls = new String[4];
 	private int[] views = new int[]{R.id.rowText1,R.id.rowText2};
@@ -44,13 +42,7 @@ public class SettingsFragment extends ListFragment{
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.settings_fragment, container, false);
-		context = MainActivity.context;
-		settingTitle = getArguments().getString(settingTitle);
-		settingStartDate = getArguments().getString(settingStartDate);
-		settingEndDate = getArguments().getString(settingEndDate);
-		settingBGURL = getArguments().getString(settingBGURL);
-//		Bundle bund = getArguments();
-//		db = new myDatabaseAdapter(context);
+
 		return rootView;
 	}
 		public void loadList(){

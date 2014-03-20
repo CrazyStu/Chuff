@@ -162,16 +162,12 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		}catch(SQLException sqle){throw sqle;}
         myCursor = db.getTable2("all",1);
         myCursor.moveToFirst();
-//        Title = myCursor.getString(1);
         DBV.Stitle = myCursor.getString(1);
         myCursor.moveToNext();
-//        StartDate = myCursor.getString(1);
         DBV.Sstart= myCursor.getString(1);
         myCursor.moveToNext();
-//        EndDate = myCursor.getString(1);
         DBV.Send= myCursor.getString(1);
         myCursor.moveToNext();
-//        BGURL = myCursor.getString(1);
         DBV.Sbgurl= myCursor.getString(1);
    	 db.close();
 	}
@@ -203,12 +199,6 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 				fragment=new HomeFragment();
 			}else if(position==2){
 				fragment=new SettingsFragment();
-//				Bundle args = new Bundle();
-//				args.putString(SettingsFragment.settingStartDate, StartDate);
-//				args.putString(SettingsFragment.settingEndDate, EndDate);
-//				args.putString(SettingsFragment.settingTitle, Title);
-//				args.putString(SettingsFragment.settingBGURL, BGURL);
-//				fragment.setArguments(args);
 			}else{
 				fragment = new DetailsFragmentTest();
 				Bundle args = new Bundle();

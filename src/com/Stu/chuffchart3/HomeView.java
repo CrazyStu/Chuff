@@ -32,7 +32,7 @@ public class HomeView extends View {
 	private Paint redBox;
 	private Paint blueBox;
 	private Paint percentRemainingPaint;
-	private Bitmap progBar;
+	private Bitmap progBar = null;
 	private Rect tangle;
 	private int percent=50;
 	private float blueBoxSize;

@@ -11,29 +11,17 @@ import android.view.ViewGroup;
 
 
 public class HomeFragment extends Fragment {
-//	public static String homeBGURL= "noURL";
-	public static Bundle bund;
 	public Drawable bg;
 	public View rootView;
-//	public HomeFragment() {
-//	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//		homeBGURL = getArguments().getString(homeBGURL);
-		bund = getArguments();
 		rootView = inflater.inflate(R.layout.home_fragment,container, false);
-//		loadBg();
 		rootView.setBackground(bg);
 		loadBg();
 		return rootView;
 	}
 	public void onResume(){
 		super.onResume();
-		bund = getArguments();
-//		loadBg();
-	}
-	public static Bundle getInfo(){
-		return bund;
 	}
     public void loadBg(){
 		new BGTask().execute(DBV.Sbgurl);
@@ -50,7 +38,6 @@ public class HomeFragment extends Fragment {
 			  if (isCancelled()) {
 				  Log.w("BGTask","Post Execute cancelled?");
 			  }else{
-//				  Log.w("HomeFragment", bg);
 				  Log.w("BGTask","Post Execute other???");
 				  rootView.setBackground(bg);
 			  }

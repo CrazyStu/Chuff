@@ -1,5 +1,5 @@
 Jobs to do
 
-Make changes to title and background update automatically - pass instructions to fragments 
-Make the date selectors work
+Make changes to title dates and background update automatically - pass instructions to fragments 
 There are two DB in the DB adapter, change to only use one
+change bitmap factory workings
