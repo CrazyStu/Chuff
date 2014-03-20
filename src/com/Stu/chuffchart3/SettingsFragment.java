@@ -22,7 +22,8 @@ public class SettingsFragment extends ListFragment{
 	private myDatabaseAdapter db = null;
 	private Cursor myCursor;
 	private Context context;
-	private SimpleCursorAdapter myAdapter;
+	private SimpleCursorAdapter myCAdapter;
+	private String[] colls = new String[4];
 	private int[] views = new int[]{R.id.rowText1,R.id.rowText2};
 	
 	
@@ -49,19 +50,22 @@ public class SettingsFragment extends ListFragment{
 		settingEndDate = getArguments().getString(settingEndDate);
 		settingBGURL = getArguments().getString(settingBGURL);
 //		Bundle bund = getArguments();
-		db = new myDatabaseAdapter(context);
+//		db = new myDatabaseAdapter(context);
 		return rootView;
 	}
 		public void loadList(){
 	        try{
 	        	Log.i("ListFragment", "Open DB loadList()");
+	        	db = new myDatabaseAdapter(MainActivity.context);
 		        db.open();
 		        myCursor = db.getTable2("all",1);
 		        db.close();
 	        }catch(Exception ex){ex.printStackTrace();}
-	        myAdapter = new SimpleCursorAdapter(MainActivity.context, R.layout.row_formats,myCursor,myCursor.getColumnNames(),views,
-	        		CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-	        setListAdapter(myAdapter);
+	        colls = myCursor.getColumnNames();
+
+	        myCAdapter = new SimpleCursorAdapter(MainActivity.context, R.layout.row_formats,myCursor,colls,views, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+//	        mySAdapter = new SimpleAdapter (MainActivity.context, data, R.layout.row_formats, colls, views);
+	        setListAdapter(myCAdapter);
 		}
 	    @Override 
 	    public void onListItemClick(ListView l, View v, int position, long id) {

@@ -20,5 +20,6 @@
     <string name="loadImage">Loading Image</string>
     <string name="title1">I Can\'t Wait</string>
     <string name="confirm">OK</string>
+    <string name="dateset">Set new date</string>
 
 </resources>

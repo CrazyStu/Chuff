@@ -29,6 +29,7 @@
         android:layout_weight="1"
         android:ems="10"
         android:hint="@string/NULL"
+        android:inputType="text"
         android:maxLength="25" />
 
     <Button

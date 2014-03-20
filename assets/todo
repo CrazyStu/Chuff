@@ -1,0 +1,5 @@
+Jobs to do
+
+Make changes to title and background update automatically - pass instructions to fragments 
+Make the date selectors work
+There are two DB in the DB adapter, change to only use one

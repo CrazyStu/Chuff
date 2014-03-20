@@ -42,6 +42,11 @@ public class HomeView extends View {
         public HomeView(Context context, AttributeSet atts) {
 		super(context);
 		myContext=MainActivity.context;
+//		Bundle bund = HomeFragment.getInfo();
+//		Log.i("homeTitle2", bund.getString("homeTitle"));
+////		homeTitle2 = bund.getString("homeTitle");
+//		homeStart = bund.getString("homeStartDate");
+//		homeEnd = bund.getString("homeEndDate");
 		loadBMP();
 		setText();
 		refresh();
@@ -53,13 +58,18 @@ public class HomeView extends View {
         @Override
 		protected void onDraw(Canvas myCanvas){
         	Log.i("MainView","Draw");
+    		Bundle bund = HomeFragment.getInfo();
+    		Log.i("homeTitle2", bund.getString("homeTitle"));
+//    		homeTitle2 = bund.getString("homeTitle");
+    		homeStart = bund.getString("homeStartDate");
+    		homeEnd = bund.getString("homeEndDate");
         	myCanvas.drawRect(screenW/8, (screenH/7)*6, screenW, screenH, bottomOverlayBox);
         	myCanvas.drawRect(screenW/8, 0, screenW, screenH/8, bottomOverlayBox);
         	myCanvas.drawRect(0, 0, screenW/8, screenH,redBox);
         	myCanvas.drawRect(0, screenH-blueBoxSize, screenW/8, screenH,blueBox);
         	myCanvas.drawText(percent+"%", (screenW/16),  screenH-6, percentRemainingPaint);
         	myCanvas.drawText(myTitle1, screenW/8+10,  (int)(screenH*0.05), title1Paint);
-        	myCanvas.drawText(DBV.Stitle, screenW-10, (int)(screenH*0.12), title2Paint);
+        	myCanvas.drawText(homeTitle2, screenW-10, (int)(screenH*0.12), title2Paint);
         	myCanvas.drawText(size, screenW-90, (int)(screenH*0.06), percentRemainingPaint);
         	myCanvas.drawBitmap(progBar,null,tangle, null);
           	if(daysDone==0){
@@ -75,13 +85,14 @@ public class HomeView extends View {
         	myCanvas.drawText(percent+"%", (screenW/16),  screenH-6, percentRemainingPaint);
         }
         public void refresh(){
-    		SetCounter.updateCounterAndDates(DBV.Sstart, DBV.Send);
+    		SetCounter.updateCounterAndDates(homeStart, homeEnd);
         	daysLeft=SetCounter.getDaysTLeft();
         	daysDone=SetCounter.getDaysTDone();
         	hoursLeft=(int) SetCounter.getHoursLeft();
         	hoursDone=(int) SetCounter.getHoursDone();
 			percent=SetCounter.getPercentCompleted();
 			blueBoxSize = screenH*((float)percent/100);
+			homeTitle2 = DBValues.getStitle();
 			invalidate();
 			
         }

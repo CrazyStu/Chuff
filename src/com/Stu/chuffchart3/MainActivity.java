@@ -1,7 +1,6 @@
 package com.Stu.chuffchart3;
 
 import java.util.Locale;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -18,10 +17,13 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+//import com.Stu.chuffchart3.DBValues;
 
 public class MainActivity extends FragmentActivity implements SettingsFragment.SelectItemListener {
 	public static Context context;
@@ -29,7 +31,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 	private static int RESULT_LOAD_IMAGE = 1;
 	
     private String Title = "title";
-    private String StartDate = "startdate";  
+    private String StartDate = "startdate";
     private String EndDate = "enddate";
     private String BGURL = "background";
 	
@@ -54,6 +56,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setCurrentItem(1);
 		mViewPager.setPageMargin(0);
+
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,32 +70,71 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
      	if(position==0){
      		myTitleDialog();
      	}else if(position==1){
+     		myDateDialog(true);
      	}else if(position==2){
+     		myDateDialog(false);
      	}else if(position==3){
      		choosePic();
     	}
+	}
+	private void myDateDialog(boolean start){
+		final Dialog setDate = new Dialog(this);
+		setDate.setContentView(R.layout.date_dialog);
+		String[] DateInts;
+		OnClickListener test = null;
+		final DatePicker picker1 = (DatePicker) setDate.findViewById(R.id.datePicker1);
+		
+		if(start){
+			setDate.setTitle("Set Start Date");
+			DateInts= StartDate.split("/");
+			test = new View.OnClickListener(){
+				public void onClick(View view){
+					StartDate =	picker1.getDayOfMonth()+"/"+(picker1.getMonth()+1)+"/"+picker1.getYear();
+					DBUpdate("startDate", StartDate);
+					setDate.dismiss();
+				}
+			};
+		}else{
+			setDate.setTitle("Set End Date");
+			DateInts= EndDate.split("/");
+			test = new View.OnClickListener(){
+				public void onClick(View view){
+					EndDate =	picker1.getDayOfMonth()+"/"+(picker1.getMonth()+1)+"/"+picker1.getYear();
+					DBUpdate("endDate", EndDate);
+					setDate.dismiss();
+					}
+				}; 
+		}
+
+		int iday = Integer.parseInt(DateInts[0]);
+		int imonth = (Integer.parseInt(DateInts[1])-1);
+		int iyear = Integer.parseInt(DateInts[2]);
+		picker1.init(iyear, imonth, iday, null);
+		Button submitDate = (Button) setDate.findViewById(R.id.button1);
+		submitDate.setOnClickListener(test);
+		
+		setDate.show();
+		
 	}
 	private void myTitleDialog(){
 				final Dialog setTitle = new Dialog(this);
 				setTitle.setContentView(R.layout.titlesetter);
 				setTitle.setTitle("Set Title Text");
-				db.open();
-				Cursor V = db.getRecord("title",1);
-				String title=V.getString(1);
-				db.close();
 				final EditText newTitle = (EditText)setTitle.findViewById(R.id.setNewTitle);
-				newTitle.setText(title);
-				newTitle.requestFocus();
+				newTitle.setText(Title);
 				setTitle.show();
+				newTitle.requestFocus();
 				Button submitTitle = (Button) setTitle.findViewById(R.id.button2);
 				submitTitle.setOnClickListener(new View.OnClickListener(){
 		        public void onClick(View view){
-		        	String input = newTitle.getText().toString();
-		        	Log.i("titleTest", "-->"+input);
-		        	DBUpdate("title",input);
-		       	 setTitle.dismiss();    
+		        	Title = newTitle.getText().toString();
+		        	Log.i("titleTest", "-->"+Title);
+		        	DBUpdate("title",Title);
+		   	 setTitle.dismiss();
+//		   	mSectionsPagerAdapter.getItem(2).onResume();
 		        }
 		    }); 
+			
 			   }
 	public void choosePic(){
 	    Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI);
@@ -106,6 +148,10 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		db.updateTitle(1,data);
 		}else if(item=="background"){
 			db.updatePic(1, data);
+		}else if(item=="startDate"){
+			db.updateStartDate(1, StartDate);
+		}else if(item=="endDate"){
+			db.updateEndDate(1, EndDate);
 		}
    	 db.close();
 	}
@@ -116,13 +162,17 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		}catch(SQLException sqle){throw sqle;}
         myCursor = db.getTable2("all",1);
         myCursor.moveToFirst();
-        Title = myCursor.getString(1);
+//        Title = myCursor.getString(1);
+        DBV.Stitle = myCursor.getString(1);
         myCursor.moveToNext();
-        StartDate = myCursor.getString(1);
+//        StartDate = myCursor.getString(1);
+        DBV.Sstart= myCursor.getString(1);
         myCursor.moveToNext();
-        EndDate = myCursor.getString(1);
+//        EndDate = myCursor.getString(1);
+        DBV.Send= myCursor.getString(1);
         myCursor.moveToNext();
-        BGURL = myCursor.getString(1);
+//        BGURL = myCursor.getString(1);
+        DBV.Sbgurl= myCursor.getString(1);
    	 db.close();
 	}
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -138,6 +188,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 			Log.i("ChoosePic","URL Selected= "+picturePath);
 			Log.i("ChoosePic","Open DB to update BGURL");
 			DBUpdate("background",picturePath);
+			
 		}
 	}
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -150,20 +201,14 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 			Fragment fragment = null;
 			if(position==1){
 				fragment=new HomeFragment();
-				Bundle args = new Bundle();
-				args.putString("homeTitle", Title);
-				args.putString("homeStartDate", StartDate);
-				args.putString("homeEndDate", EndDate);
-				args.putString(HomeFragment.homeBGURL, BGURL);
-				fragment.setArguments(args);
 			}else if(position==2){
 				fragment=new SettingsFragment();
-				Bundle args = new Bundle();
-				args.putString(SettingsFragment.settingStartDate, StartDate);
-				args.putString(SettingsFragment.settingEndDate, EndDate);
-				args.putString(SettingsFragment.settingTitle, Title);
-				args.putString(SettingsFragment.settingBGURL, BGURL);
-				fragment.setArguments(args);
+//				Bundle args = new Bundle();
+//				args.putString(SettingsFragment.settingStartDate, StartDate);
+//				args.putString(SettingsFragment.settingEndDate, EndDate);
+//				args.putString(SettingsFragment.settingTitle, Title);
+//				args.putString(SettingsFragment.settingBGURL, BGURL);
+//				fragment.setArguments(args);
 			}else{
 				fragment = new DetailsFragmentTest();
 				Bundle args = new Bundle();
@@ -175,7 +220,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 3;
+			return 4;
 		}
 		@Override
 		public CharSequence getPageTitle(int position) {

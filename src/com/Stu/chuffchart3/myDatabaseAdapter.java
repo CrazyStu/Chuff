@@ -77,7 +77,7 @@ public class myDatabaseAdapter {
 			Log.i("db", "New Database Created :D");	
 		}
 		public void onOpen(SQLiteDatabase database){
-			Log.i("Database", "...is OPEN");
+			Log.i("Database", ">>>>DB OPEN<<<<");
 		}
 		@Override
 		public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
@@ -92,7 +92,7 @@ public class myDatabaseAdapter {
 	}
 	public void close(){
 		myDatabaseHelper.close();
-		Log.i("Database", "...is Closed");
+		Log.i("Database", ">>>>DB Closed<<<<");
 	}
 	public boolean updateDates(long rowId, String newSdate,String newEdate){
 		ContentValues args = new ContentValues();
@@ -102,6 +102,22 @@ public class myDatabaseAdapter {
 		ContentValues args2 = new ContentValues();
 		args2.put(KEY_VAL, newSdate);
 		db.update(SET_TABLE2, args2, KEY_ROWID+"="+2,null);
+		args2.put(KEY_VAL, newEdate);
+		db.update(SET_TABLE2, args2, KEY_ROWID+"="+3,null);
+		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+	}
+	public boolean updateStartDate(long rowId, String newSdate){
+		ContentValues args = new ContentValues();
+		args.put(KEY_START_DATE, newSdate);
+		ContentValues args2 = new ContentValues();
+		args2.put(KEY_VAL, newSdate);
+		db.update(SET_TABLE2, args2, KEY_ROWID+"="+2,null);
+		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+	}
+	public boolean updateEndDate(long rowId, String newEdate){
+		ContentValues args = new ContentValues();
+		args.put(KEY_START_DATE, newEdate);
+		ContentValues args2 = new ContentValues();
 		args2.put(KEY_VAL, newEdate);
 		db.update(SET_TABLE2, args2, KEY_ROWID+"="+3,null);
 		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;

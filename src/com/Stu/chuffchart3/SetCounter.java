@@ -51,7 +51,15 @@ public class SetCounter {
 //		public SetCounter() {
 //		}
 		public static void updateCounterAndDates(String start, String end) {
-			loadDbDates(start, end);
+			String[] StartDate= start.split("/");
+			Sday = Integer.parseInt(StartDate[0]);
+			Smonth = Integer.parseInt(StartDate[1])-1;
+			Syear = Integer.parseInt(StartDate[2]);
+			
+			String[] EndDate=end.split("/");
+			Eday = Integer.parseInt(EndDate[0]);
+			Emonth = Integer.parseInt(EndDate[1])-1;
+			Eyear = Integer.parseInt(EndDate[2]);
 			updateCounter();
 		}
 		public static void updateCounter() {
@@ -104,18 +112,18 @@ public class SetCounter {
 			secsLeft=(int) ((compareLeft/1000)-(minsTLeft*60));
 		
 		}
-		private static void loadDbDates(String start, String end){
-			String[] StartDate= start.split("/");
-			Sday = Integer.parseInt(StartDate[0]);
-			Smonth = Integer.parseInt(StartDate[1]);
-			Syear = Integer.parseInt(StartDate[2]);
-			
-			String[] EndDate=end.split("/");
-			Eday = Integer.parseInt(EndDate[0]);
-			Emonth = Integer.parseInt(EndDate[1]);
-			Eyear = Integer.parseInt(EndDate[2]);
-	
-		}
+//		private static void loadDates(String start, String end){
+//			String[] StartDate= start.split("/");
+//			Sday = Integer.parseInt(StartDate[0]);
+//			Smonth = Integer.parseInt(StartDate[1])-1;
+//			Syear = Integer.parseInt(StartDate[2]);
+//			
+//			String[] EndDate=end.split("/");
+//			Eday = Integer.parseInt(EndDate[0]);
+//			Emonth = Integer.parseInt(EndDate[1])-1;
+//			Eyear = Integer.parseInt(EndDate[2]);
+//	
+//		}
 		public static int getPercentRemaining(){
 			return percent1;
 		}

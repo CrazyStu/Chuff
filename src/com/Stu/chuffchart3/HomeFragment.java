@@ -11,30 +11,32 @@ import android.view.ViewGroup;
 
 
 public class HomeFragment extends Fragment {
-	public static String homeBGURL= "noURL";
+//	public static String homeBGURL= "noURL";
 	public static Bundle bund;
 	public Drawable bg;
 	public View rootView;
-	public HomeFragment() {
-	}
+//	public HomeFragment() {
+//	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		homeBGURL = getArguments().getString(homeBGURL);
+//		homeBGURL = getArguments().getString(homeBGURL);
 		bund = getArguments();
 		rootView = inflater.inflate(R.layout.home_fragment,container, false);
 //		loadBg();
 		rootView.setBackground(bg);
+		loadBg();
 		return rootView;
 	}
 	public void onResume(){
 		super.onResume();
-		loadBg();
+		bund = getArguments();
+//		loadBg();
 	}
 	public static Bundle getInfo(){
 		return bund;
 	}
     public void loadBg(){
-		new BGTask().execute(homeBGURL);
+		new BGTask().execute(DBV.Sbgurl);
     }
 	class BGTask extends AsyncTask<String,Void,String>{
 		protected String doInBackground(String... s) {
