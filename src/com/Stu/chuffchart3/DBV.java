@@ -1,6 +1,7 @@
 package com.Stu.chuffchart3;
 
 public class DBV {
+		public static String Sheader = "I Can't Wait...";
 		public static String Stitle = "StaticTitle";
 		public static String Sbgurl = "StaticURL";
 		public static String Sstart = "02/02/2002";

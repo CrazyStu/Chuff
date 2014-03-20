@@ -18,7 +18,7 @@ public class SettingsFragment extends ListFragment{
 	public static String settingStartDate = "noDate";
 	public static String settingEndDate = "noDate";
 	SelectItemListener mCallback;
-	private myDatabaseAdapter db = null;
+//	private myDatabaseAdapter db = null;
 	private Cursor myCursor;
 	private SimpleCursorAdapter myCAdapter;
 	private String[] colls = new String[4];
@@ -37,39 +37,54 @@ public class SettingsFragment extends ListFragment{
                     + " must implement SelectItemListener");
         }
     }
-
-
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+		Log.v("ListFragment", "CreateView");
 		View rootView = inflater.inflate(R.layout.settings_fragment, container, false);
-
+		loadList();
 		return rootView;
 	}
-		public void loadList(){
-	        try{
-	        	Log.i("ListFragment", "Open DB loadList()");
-	        	db = new myDatabaseAdapter(MainActivity.context);
-		        db.open();
-		        myCursor = db.getTable2("all",1);
-		        db.close();
-	        }catch(Exception ex){ex.printStackTrace();}
+	public void loadList(){
+		try{
+	    	Log.i("ListFragment", "Open DB loadList()");
+	    	myDatabaseAdapter db = new myDatabaseAdapter(MainActivity.context);
+	        db.open();
+	        myCursor = db.getTable2("all",1);
+	        db.close();
+		}catch(Exception ex){ex.printStackTrace();}
 	        colls = myCursor.getColumnNames();
-
 	        myCAdapter = new SimpleCursorAdapter(MainActivity.context, R.layout.row_formats,myCursor,colls,views, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-//	        mySAdapter = new SimpleAdapter (MainActivity.context, data, R.layout.row_formats, colls, views);
 	        setListAdapter(myCAdapter);
+	        
 		}
 	    @Override 
 	    public void onListItemClick(ListView l, View v, int position, long id) {
 		    mCallback.onListItemSelected(position);
-//			loadList();
 	    }
-		public void onResume(){
-			super.onResume();
-			 Log.i("ListFragment", "Resume -loadList()");
-			loadList();
-		}
-	  
-	    
+//		public void onResume(){
+//			super.onResume();
+//			 Log.v("ListFragment", "RESUME");
+////			loadList();
+//		}
+//		public void onStart(){
+//			super.onStart();
+//			 Log.v("ListFragment", "START");
+//		}
+//		public void onPause(){
+//			super.onPause();
+//			 Log.v("ListFragment", "Pause");
+//		}
+//		public void onStop(){
+//			super.onStop();
+//			 Log.v("ListFragment", "STOP");
+//		}
+//		public void onDestroyView(){
+//			super.onDestroyView();
+//			 Log.v("ListFragment", "DestroyView");
+//		}
+//		public void onDestroy(){
+//			super.onDestroy();
+//			 Log.v("ListFragment", "Destroy");
+//		}
 }
 

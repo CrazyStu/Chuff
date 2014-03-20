@@ -1,6 +1,7 @@
 package com.Stu.chuffchart3;
 
 import java.util.Locale;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -56,7 +57,6 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setCurrentItem(1);
 		mViewPager.setPageMargin(0);
-
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -86,21 +86,21 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		
 		if(start){
 			setDate.setTitle("Set Start Date");
-			DateInts= StartDate.split("/");
+			DateInts= DBV.Sstart.split("/");
 			test = new View.OnClickListener(){
 				public void onClick(View view){
-					StartDate =	picker1.getDayOfMonth()+"/"+(picker1.getMonth()+1)+"/"+picker1.getYear();
-					DBUpdate("startDate", StartDate);
+					DBV.Sstart =	picker1.getDayOfMonth()+"/"+(picker1.getMonth()+1)+"/"+picker1.getYear();
+					DBUpdate("startDate", DBV.Sstart);
 					setDate.dismiss();
 				}
 			};
 		}else{
 			setDate.setTitle("Set End Date");
-			DateInts= EndDate.split("/");
+			DateInts= DBV.Send.split("/");
 			test = new View.OnClickListener(){
 				public void onClick(View view){
-					EndDate =	picker1.getDayOfMonth()+"/"+(picker1.getMonth()+1)+"/"+picker1.getYear();
-					DBUpdate("endDate", EndDate);
+					DBV.Send =	picker1.getDayOfMonth()+"/"+(picker1.getMonth()+1)+"/"+picker1.getYear();
+					DBUpdate("endDate", DBV.Send);
 					setDate.dismiss();
 					}
 				}; 
@@ -131,7 +131,10 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		        	Log.i("titleTest", "-->"+Title);
 		        	DBUpdate("title",Title);
 		   	 setTitle.dismiss();
-//		   	mSectionsPagerAdapter.getItem(2).onResume();
+//		   	 long frag = mSectionsPagerAdapter.getItemId(2);
+//		   	 SettingsFragment frag1 = (SettingsFragment) getSupportFragmentManager().findFragmentById((int) frag);
+//		   	 frag1.onDestroy();
+//		   	 frag1.onCreate(null);
 		        }
 		    }); 
 			
@@ -149,9 +152,9 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		}else if(item=="background"){
 			db.updatePic(1, data);
 		}else if(item=="startDate"){
-			db.updateStartDate(1, StartDate);
+			db.updateStartDate(1, DBV.Sstart);
 		}else if(item=="endDate"){
-			db.updateEndDate(1, EndDate);
+			db.updateEndDate(1, DBV.Send);
 		}
    	 db.close();
 	}
@@ -184,7 +187,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 			Log.i("ChoosePic","URL Selected= "+picturePath);
 			Log.i("ChoosePic","Open DB to update BGURL");
 			DBUpdate("background",picturePath);
-			
+			DBV.Sbgurl=picturePath;
 		}
 	}
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
