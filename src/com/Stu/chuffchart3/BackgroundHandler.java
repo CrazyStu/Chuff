@@ -5,16 +5,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-public class BackgroundHandlerV2 {
+public class BackgroundHandler {
 	
 	private static Drawable BGDrawable;
 	private static String BGURL;
 	
-	public BackgroundHandlerV2(){}
+	public BackgroundHandler(){}
 	
 	public static Drawable getBackground(String url){
 		BGURL=url;
-				
 		Log.i("BgHandler2","Find image: "+ BGURL);
 		BitmapFactory.Options bgOptions = new BitmapFactory.Options();
 		bgOptions.inJustDecodeBounds=true;
@@ -31,13 +30,4 @@ public class BackgroundHandlerV2 {
 		}
 		return BGDrawable;
 	}
-//	public static String getTitle(){
-//		myDatabaseAdapter db = new myDatabaseAdapter(MainActivity.context);
-//		db.open();
-//		Cursor V = db.getRecord("title",1);
-//		String title=V.getString(1);
-//		db.close();
-//	
-//		return title;
-//	}
 }

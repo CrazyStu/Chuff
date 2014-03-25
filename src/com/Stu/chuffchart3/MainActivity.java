@@ -26,7 +26,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 //import com.Stu.chuffchart3.DBValues;
 
-public class MainActivity extends FragmentActivity implements SettingsFragment.SelectItemListener {
+public class MainActivity extends FragmentActivity implements SettingsFragment.SelectItemListener{
 	public static Context context;
 	private myDatabaseAdapter db = null;
 	private static int RESULT_LOAD_IMAGE = 1;
@@ -49,6 +49,9 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		Log.d("DB", StartDate);
 		Log.d("DB", EndDate);
 		Log.d("DB", BGURL);
+		
+		
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
@@ -174,22 +177,22 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
         DBV.Sbgurl= myCursor.getString(1);
    	 db.close();
 	}
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-			Uri selectedImage = data.getData();
-			String[] filePathColumn = { MediaStore.Images.Thumbnails.DATA };
-			Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-			cursor.moveToFirst();
-			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-			String picturePath = cursor.getString(columnIndex);
-			cursor.close();
-			Log.i("ChoosePic","URL Selected= "+picturePath);
-			Log.i("ChoosePic","Open DB to update BGURL");
-			DBUpdate("background",picturePath);
-			DBV.Sbgurl=picturePath;
-		}
-	}
+//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+//			Uri selectedImage = data.getData();
+//			String[] filePathColumn = { MediaStore.Images.Thumbnails.DATA };
+//			Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+//			cursor.moveToFirst();
+//			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//			String picturePath = cursor.getString(columnIndex);
+//			cursor.close();
+//			Log.i("ChoosePic","URL Selected= "+picturePath);
+//			Log.i("ChoosePic","Open DB to update BGURL");
+//			DBUpdate("background",picturePath);
+//			DBV.Sbgurl=picturePath;
+//		}
+//	}
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {

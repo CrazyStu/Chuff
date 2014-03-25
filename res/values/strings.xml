@@ -21,5 +21,7 @@
     <string name="title1">I Can\'t Wait</string>
     <string name="confirm">OK</string>
     <string name="dateset">Set new date</string>
+    <string name="timecomp">Time Completed</string>
+    <string name="timerem">Time Remaining</string>
 
 </resources>

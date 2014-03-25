@@ -17,24 +17,21 @@ public class HomeFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.home_fragment,container, false);
 		rootView.setBackground(bg);
-		loadBg();
+//		loadBg();
 		return rootView;
 	}
-	public void onResume(){
-		super.onResume();
-	}
-    public void loadBg(){
+//	public void onResume(){
+//		super.onResume();
+//	}
+    private void loadBg(){
 		new BGTask().execute(DBV.Sbgurl);
     }
 	class BGTask extends AsyncTask<String,Void,String>{
 		protected String doInBackground(String... s) {
-				Log.w("BGTask","doInBackground Started");
-				bg=BackgroundHandlerV2.getBackground(s[0]);
-				Log.w("BGTask s",s[0]);
+				bg=BackgroundHandler.getBackground(s[0]);
 				return s[0];
 		}
 		protected void onPostExecute(String s){
-			Log.w("HomeFragment", "bg");
 			  if (isCancelled()) {
 				  Log.w("BGTask","Post Execute cancelled?");
 			  }else{

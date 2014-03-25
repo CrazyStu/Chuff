@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@drawable/pic1"
+    android:background="@android:color/transparent"
     android:gravity="left"
     android:layoutMode="clipBounds"
     android:paddingBottom="0dp"
@@ -12,7 +12,7 @@
     tools:context=".MainActivity$TestFragment" >
 
     <ImageView
-        android:id="@+id/LoadIMage"
+        android:id="@+id/LoadImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/loadImage"

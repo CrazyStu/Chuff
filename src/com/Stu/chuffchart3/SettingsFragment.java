@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-public class SettingsFragment extends ListFragment{
+public class SettingsFragment extends ListFragment {
 	public static String settingTitle = "noTitle";
 	public static String settingBGURL = "noURL";
 	public static String settingStartDate = "noDate";
@@ -41,6 +41,8 @@ public class SettingsFragment extends ListFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		Log.v("ListFragment", "CreateView");
 		View rootView = inflater.inflate(R.layout.settings_fragment, container, false);
+		
+		
 		loadList();
 		return rootView;
 	}
@@ -86,5 +88,6 @@ public class SettingsFragment extends ListFragment{
 //			super.onDestroy();
 //			 Log.v("ListFragment", "Destroy");
 //		}
+
 }
 
