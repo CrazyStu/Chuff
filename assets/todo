@@ -1,5 +1,14 @@
 Jobs to do
 
-Make changes to title dates and background update automatically - pass instructions to fragments 
+fix progress bar update problem
+fix date calculation math?
+set time done / left to change on press
+
+
+make bg loading happen on its own thread.... done?
+
+light and dark theme.
+
 There are two DB in the DB adapter, change to only use one
-change bitmap factory workings
+
+change bitmap factory workings minor problems with scaling...

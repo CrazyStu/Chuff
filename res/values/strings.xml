@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ChuffChart3</string>
+    <string name="app_name">Dead Chuffed</string>
     <string name="action_settings">Settings</string>
     <string name="title_section1">Breakdown</string>
     <string name="title_section2">Home</string>
     <string name="title_section3">Settings</string>
     <string name="fragNum">Fragment Number</string>
     <string name="progBar">Progress Bar</string>
-    <string name="NULL">No Text</string>
-    <string name="setTitle">setTitle</string>
+    <string name="NULL">Loading</string>
+    <string name="setTitle">Set Title</string>
     <string name="secs">Secs</string>
     <string name="mins">Mins</string>
     <string name="hours">Hours</string>
     <string name="days">Days</string>
     <string name="weeks">Weeks</string>
     <string name="months">Months</string>
-    <string name="title">My Chuff Chart</string>
+    <string name="title">Breakdown</string>
     <string name="loadImage">Loading Image</string>
     <string name="title1">I Can\'t Wait</string>
     <string name="confirm">OK</string>
     <string name="dateset">Set new date</string>
     <string name="timecomp">Time Completed</string>
     <string name="timerem">Time Remaining</string>
+    <string name="newBackground">Choose Background Image</string>
+    <string name="useWallpaper">Use Android Wallpaper</string>
+    <string name="chooseGall">Choose From Gallery</string>
+    <string name="percHolder">100%</string>
+    <string name="daysDone">Days Done</string>
+    <string name="hoursDone">Hours Done</string>
+    <string name="daysLeft">Days Left</string>
+    <string name="hoursLeft">Hours Left</string>
 
 </resources>
