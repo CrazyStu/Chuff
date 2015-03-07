@@ -9,6 +9,7 @@
     android:paddingTop="0dp"
     tools:context=".MainActivity$TestFragment" >
 
+
     <com.totirrapp.cc.HomeView
         android:id="@+id/mainView01"
         android:layout_width="fill_parent"
@@ -25,7 +26,11 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/progBar"
         android:scaleType="fitXY"
-        android:src="@drawable/progress" />
+        android:src="@drawable/progress"
+        android:layout_margin="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginRight="0dp" />
 
     <TextView
         android:id="@+id/percDoneText"
