@@ -53,7 +53,8 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/progBar"
         android:background="#66FFFFFF"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:id="@+id/chart_title">
 
         <TextView
             android:id="@+id/titleTop"
@@ -87,7 +88,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/daysDoneTextView"
+            android:id="@+id/timeDoneTextView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
@@ -96,7 +97,7 @@
             android:textSize="35sp" />
 
         <TextView
-            android:id="@+id/daysLeftTextView"
+            android:id="@+id/timeLeftTextView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="right"

@@ -3,7 +3,6 @@ package com.totirrapp.cc;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,27 +37,53 @@ public class HomeFragment extends Fragment{
 		return rootView;
 	}
     public interface clickCallback {
-        public void buttonPressed(int id);
+        public void onShortPress(int v);
+        public void onLongPress(int v);
     }
     public void setupListeners(){
         shortPress= new View.OnClickListener() {
             public void onClick(View v){
                Log.e("shortPress", "viewID =" + v.getId());
+                call.onShortPress(v.getId());
+//                v.setVisibility(View.VISIBLE);
             }
         };
         longPress = new View.OnLongClickListener() {
             public boolean onLongClick(View v){
-                    Log.e("LOOOONGPress","viewID ="+v.getId());
-                return false;
+                Log.e("LOOOONGPress","viewID ="+v.getId());
+                call.onLongPress(v.getId());
+//                v.setVisibility(View.INVISIBLE);
+                return true;
             }
         };
     }
-
     public void setupButtons(){
-        View testButton;
-        testButton = this.rootView.findViewById(id.daysDoneTextView);
-        testButton.setOnClickListener(shortPress);
-        testButton.setOnLongClickListener(longPress);
+        View timeDoneButton;
+        timeDoneButton = this.rootView.findViewById(id.timeDoneTextView);
+        timeDoneButton.setOnClickListener(shortPress);
+        timeDoneButton.setOnLongClickListener(longPress);
+
+        View timeLeftButton;
+        timeLeftButton = this.rootView.findViewById(id.timeLeftTextView);
+        timeLeftButton.setOnClickListener(shortPress);
+        timeLeftButton.setOnLongClickListener(longPress);
+
+        View chartTitle;
+        chartTitle = this.rootView.findViewById(id.chart_title);
+        chartTitle.setOnClickListener(shortPress);
+        chartTitle.setOnLongClickListener(longPress);
+
+        View progressBar;
+        progressBar = this.rootView.findViewById(id.progBar);
+        progressBar.setOnClickListener(shortPress);
+        progressBar.setOnLongClickListener(longPress);
+
+        View chartBackground;
+        chartBackground = this.rootView.findViewById(id.frag_home_parent_view);
+        chartBackground.setOnClickListener(shortPress);
+        chartBackground.setOnLongClickListener(longPress);
+
+
     }
 
 }

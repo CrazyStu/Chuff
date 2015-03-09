@@ -31,5 +31,7 @@
     <string name="hoursDone">Hours Done</string>
     <string name="daysLeft">Days Left</string>
     <string name="hoursLeft">Hours Left</string>
+    <string name="defaultTitle">for something!</string>
+    <string name="instructions">Press and hold on the parts you want to change.</string>
 
 </resources>

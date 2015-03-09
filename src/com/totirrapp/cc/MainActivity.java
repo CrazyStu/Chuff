@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -36,57 +35,29 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Locale;
 
-import static com.totirrapp.cc.R.id.daysDoneTextView;
-import static com.totirrapp.cc.SetCounter.getDaysDone;
-import static com.totirrapp.cc.SetCounter.getDaysLeft;
+import static com.totirrapp.cc.R.id.timeDoneTextView;
 import static com.totirrapp.cc.SetCounter.getDaysTDone;
 import static com.totirrapp.cc.SetCounter.getDaysTLeft;
-import static com.totirrapp.cc.SetCounter.getEndDate;
-import static com.totirrapp.cc.SetCounter.getHoursDone;
-import static com.totirrapp.cc.SetCounter.getHoursLeft;
 import static com.totirrapp.cc.SetCounter.getHoursTDone;
 import static com.totirrapp.cc.SetCounter.getHoursTLeft;
-import static com.totirrapp.cc.SetCounter.getMinsDone;
-import static com.totirrapp.cc.SetCounter.getMinsLeft;
-import static com.totirrapp.cc.SetCounter.getMinsTDone;
-import static com.totirrapp.cc.SetCounter.getMinsTLeft;
-import static com.totirrapp.cc.SetCounter.getMonthsDone;
-import static com.totirrapp.cc.SetCounter.getMonthsLeft;
-import static com.totirrapp.cc.SetCounter.getMonthsTDone;
-import static com.totirrapp.cc.SetCounter.getMonthsTLeft;
-import static com.totirrapp.cc.SetCounter.getSecsDone;
-import static com.totirrapp.cc.SetCounter.getSecsLeft;
-import static com.totirrapp.cc.SetCounter.getSecsTDone;
-import static com.totirrapp.cc.SetCounter.getSecsTLeft;
-import static com.totirrapp.cc.SetCounter.getStartDate;
-import static com.totirrapp.cc.SetCounter.getWeeksDone;
-import static com.totirrapp.cc.SetCounter.getWeeksLeft;
-import static com.totirrapp.cc.SetCounter.getWeeksTDone;
-import static com.totirrapp.cc.SetCounter.getWeeksTLeft;
-import static com.totirrapp.cc.SetCounter.updateCounter;
 
-public class MainActivity extends FragmentActivity implements SettingsFragment.SelectItemListener, View.OnClickListener {
-	public static Context			context;
+public class MainActivity extends FragmentActivity implements HomeFragment.clickCallback {
+        public static Context			context;
 	private myDatabaseAdapter		db					= null;
 	private static int				RESULT_LOAD_IMAGE	= 1;
 	private SectionsPagerAdapter	mSectionsPagerAdapter;
 	private ViewPager				mViewPager;
-	private SettingsFragment		setFrag;
 	private HomeFragment			homeFrag;
-	private DetailsFragment			detFrag;
+	private HelpFragment            helpFrag;
 	private String					noImage				= "Android Wallpaper";
 	private boolean					running				= true;
 	private detailsThread			MT;
 	private Bitmap					bg1;
-//    private OnClickListener		shortPress;
-//    private OnLongClickListener longPress;
-	// private HomeView testings;
-	private int count =0;
-
 	private TextView				percent				= null;
-	private TextView				timeDoneText			= null;
-	private TextView				timeLeftText			= null;
+	private TextView				timeDoneText		= null;
+	private TextView				timeLeftText		= null;
 	private TextView				titleBot			= null;
+    private Intent                  intent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -111,9 +82,6 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
 		temp2.setGravity(Gravity.CENTER);
 		mViewPager.setBackground(temp2);
-//        setupListeners();
-//        setupHomeViewButtons();
-
 	}
 	protected void onPause(){
 		super.onPause();
@@ -131,53 +99,28 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//        setupHomeViewButtons();
 	}
+	public void onShortPress(int v){
+        if (v == R.id.chart_title) {
+           View test = findViewById(v);
+            test.setVisibility(View.INVISIBLE);
+        }else if (v == R.id.frag_home_parent_view) {
+            Intent intent = new Intent(this, DetailsActivity.class);
+            startActivity(intent);
+        }
+	}
+    public void onLongPress(int v){
+        if (v == R.id.chart_title) {
+            myTitleDialog();
+        } else if (v == R.id.timeDoneTextView) {
+            myDateDialog(true);
+        } else if (v == R.id.timeLeftTextView) {
+            myDateDialog(false);
+        } else if (v == R.id.frag_home_parent_view) {
+            myBGDialog();
+        }
+    }
 
-/*    public void setupListeners(){
-        shortPress= new View.OnClickListener() {
-            public void onClick(View v){
-               Log.d("shortPress","viewID ="+v.getId());
-            }
-        };
-        longPress = new View.OnLongClickListener() {
-            public boolean onLongClick(View v){
-                    Log.d("shortPress","viewID ="+v.getId());
-                return false;
-            }
-        };
-    }*/
-
-
-	// ### test setting up home view buttons
-	public void setupHomeViewButtons(){
-        Log.i("setupHomeViewButtons","setupHomeViewButtons called");
-//		findViewById(daysDoneTextView).setOnClickListener(this);
-//        findViewById(daysDoneTextView).setOnClickListener(shortPress);
-//        findViewById(daysDoneTextView).setOnLongClickListener(longPress);
-	
-	}
-	public void onClick(View view){
-		if (view.getId() == daysDoneTextView) {
-			count ++;
-			Log.i("done time", "click recorded correctly >>> "+ count);
-		}
-	}
-	
-	// ### Update settings methods
-	@Override
-	public void onListItemSelected(int position){
-		Log.i("MainActivity", "List Selected -position=" + position);
-		if (position == 0) {
-			myTitleDialog();
-		} else if (position == 1) {
-			myDateDialog(true);
-		} else if (position == 2) {
-			myDateDialog(false);
-		} else if (position == 3) {
-			myBGDialog();
-		}
-	}
 	private void myDateDialog(boolean start){
 		final Dialog setDate = new Dialog(this);
 		setDate.setContentView(R.layout.dialog_dates);
@@ -212,7 +155,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 					}
 					DBV.Sstart  = Sday + "/" + (Smonth+1) + "/" + Syear;
 					DBUpdate("startDate", DBV.Sstart);
-					setFrag.loadList();
+//					setFrag.loadList();
 					setDate.dismiss();
 					SetCounter.updateCounterAndDates();
 				}
@@ -242,7 +185,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 						DBV.sEnd = Eday + "/" + (Emonth+1) + "/" + Eyear;	
 					}
 					DBUpdate("endDate", DBV.sEnd);
-					setFrag.loadList();
+//					setFrag.loadList();
 					setDate.dismiss();
 					SetCounter.updateCounterAndDates();
 				}
@@ -272,7 +215,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
                 DBV.sTitle = newTitle.getText().toString();
                 DBUpdate("title", DBV.sTitle);
                 Log.i("title updated", "--> " + DBV.sTitle + " <--");
-                setFrag.loadList();
+//                setFrag.loadList();
                 setTitle.dismiss();
             }
         });
@@ -294,7 +237,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
                 db.updatePic(1, DBV.sBgUrl);
                 db.close();
                 mViewPager.setBackgroundResource(0);
-                setFrag.loadList();
+//                setFrag.loadList();
             }
         });
 		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
@@ -305,7 +248,6 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 			}
 		});
 	}
-
 	// ## Choose Picture / Update DB / Scale Image / Set Background
 	public void choosePic(){
 		Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI);
@@ -327,7 +269,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 			db.updatePic(1, picturePath);
 			db.close();
 			DBV.sBgUrl = picturePath;
-			setFrag.loadList();
+//			setFrag.loadList();
 			BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
 			temp2.setGravity(Gravity.CENTER);
 			mViewPager.setBackground(temp2);
@@ -438,6 +380,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 
 		return bg1;
 	}
+
 	// ### Update Database value
 	public void DBUpdate(String item,String data){
 		try {
@@ -475,78 +418,13 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		db.close();
 	}
 	// ### Details update method
-	public void updateDetailsView(){
-		Log.i("detailsFrag", "updateDetailsView()");
 
-		TextView startD = (TextView) findViewById(R.id.startDate);
-		TextView endD = (TextView) findViewById(R.id.endDate);
-
-		TextView num106 = (TextView) findViewById(R.id.monthsDoneT);
-		TextView num105 = (TextView) findViewById(R.id.weeksDoneT);
-		TextView num104 = (TextView) findViewById(R.id.daysDoneT);
-		TextView num103 = (TextView) findViewById(R.id.hoursDoneT);
-		TextView num102 = (TextView) findViewById(R.id.minsDoneT);
-		TextView num101 = (TextView) findViewById(R.id.secsDoneT);
-
-		TextView num160 = (TextView) findViewById(R.id.monthsDone);
-		TextView num150 = (TextView) findViewById(R.id.weeksDone);
-		TextView num140 = (TextView) findViewById(R.id.daysDone);
-		TextView num130 = (TextView) findViewById(R.id.hoursDone);
-		TextView num120 = (TextView) findViewById(R.id.minsDone);
-		TextView num110 = (TextView) findViewById(R.id.secsDone);
-
-		TextView num206 = (TextView) findViewById(R.id.monthsLeftT);
-		TextView num205 = (TextView) findViewById(R.id.weeksLeftT);
-		TextView num204 = (TextView) findViewById(R.id.daysLeftT);
-		TextView num203 = (TextView) findViewById(R.id.hoursLeftT);
-		TextView num202 = (TextView) findViewById(R.id.minsLeftT);
-		TextView num201 = (TextView) findViewById(R.id.secsLeftT);
-
-		TextView num210 = (TextView) findViewById(R.id.secsLeft);
-		TextView num220 = (TextView) findViewById(R.id.minsLeft);
-		TextView num230 = (TextView) findViewById(R.id.hoursLeft);
-		TextView num240 = (TextView) findViewById(R.id.daysLeft);
-		TextView num250 = (TextView) findViewById(R.id.weeksLeft);
-		TextView num260 = (TextView) findViewById(R.id.monthsLeft);
-
-		startD.setText("Start: " + getStartDate());
-		endD.setText("End: " + getEndDate());
-
-		num101.setText(String.format("%,d", getSecsTDone()));
-		num102.setText(String.format("%,d", getMinsTDone()));
-		num103.setText(String.format("%,d", getHoursTDone()));
-		num104.setText(String.format("%,d", getDaysTDone()));
-		num105.setText(String.format("%,d", getWeeksTDone()));
-		num106.setText(String.format("%,d", getMonthsTDone()));
-
-		num110.setText("" + getSecsDone());
-		num120.setText("" + getMinsDone());
-		num130.setText("" + getHoursDone());
-		num140.setText("" + getDaysDone());
-		num150.setText("" + getWeeksDone());
-		num160.setText("" + getMonthsDone());
-
-		num201.setText(String.format("%,d", getSecsTLeft()));
-		num202.setText(String.format("%,d", getMinsTLeft()));
-		num203.setText(String.format("%,d", getHoursTLeft()));
-		num204.setText(String.format("%,d", getDaysTLeft()));
-		num205.setText(String.format("%,d", getWeeksTLeft()));
-		num206.setText(String.format("%,d", getMonthsTLeft()));
-
-		num210.setText("" + getSecsLeft());
-		num220.setText("" + getMinsLeft());
-		num230.setText("" + getHoursLeft());
-		num240.setText("" + getDaysLeft());
-		num250.setText(getWeeksLeft() + "");
-		num260.setText(getMonthsLeft() + "");
-
-	}
 	public void updateHomeView(){
 		try {
 			if(percent == null){
 				percent = (TextView) findViewById(R.id.percDoneText);
-				timeDoneText = (TextView) findViewById(daysDoneTextView);
-				timeLeftText = (TextView) findViewById(R.id.daysLeftTextView);
+				timeDoneText = (TextView) findViewById(timeDoneTextView);
+				timeLeftText = (TextView) findViewById(R.id.timeLeftTextView);
 				titleBot = (TextView) findViewById(R.id.titleBot);
 			}
 			percent.setText(DBV.percentDone + "%");
@@ -575,22 +453,17 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		}
 		@Override
 		public Fragment getItem(int position){
-			if (position == 1) {
-				
-				homeFrag = new HomeFragment();
-				return homeFrag;
-			} else if (position == 2) {
-				setFrag = new SettingsFragment();
-				return setFrag;
+			if (position == 0) {
+                helpFrag = new HelpFragment();
+                return helpFrag;
 			} else {
-				detFrag = new DetailsFragment();
-				return detFrag;
-			}
+                homeFrag = new HomeFragment();
+                return homeFrag;			}
 		}
 		@Override
 		public int getCount(){
-			// Show 3 total pages.
-			return 3;
+			// Show 4 total pages.
+			return 4;
 		}
 		@Override
 		public CharSequence getPageTitle(int position){
@@ -600,36 +473,23 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 				return getString(R.string.title_section1).toUpperCase(l);
 			case 1:
 				return getString(R.string.title_section2).toUpperCase(l);
-			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
 			}
 			return null;
 		}
 	}
 
-	private class detailsThread extends Thread {
-		public void run(){
-			Log.e("MT State", MT.getState() + "");
-			while (running) {
-//				Log.v("detailsTread","current view = "+mViewPager.getCurrentItem());
-				if (mViewPager.getCurrentItem() == 0) {
-					try {
-						updateCounter();
-						runOnUiThread(new Runnable() {public void run(){updateDetailsView();}});
-					} catch (Exception e) {e.printStackTrace();}
-				}
-				if (mViewPager.getCurrentItem() == 1) {
-					try {
-						SetCounter.updateCounter();
-						runOnUiThread(new Runnable(){public void run() {updateHomeView();}});
-					} catch (Exception e) {e.printStackTrace();}
-				}
-				try {
-					sleep(1000);
-				} catch (Exception e) {e.printStackTrace();}
-			}
-			Log.e("MT State", MT.getState() +"stopped");
-		}
-	}
+    private class detailsThread extends Thread {
+        public void run(){
+            Log.e("MT State", MT.getState() + "");
+            while (running) {
+                try {
+                    SetCounter.updateCounter();
+                    runOnUiThread(new Runnable(){public void run() {updateHomeView();}});
+                    sleep(1000);
+                } catch (Exception e) {e.printStackTrace();}
+            }
+            Log.e("MT State", MT.getState() +"stopped");
+        }
+    }
 
 }
