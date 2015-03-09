@@ -1,5 +1,42 @@
 package com.totirrapp.cc;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
+
+import static com.totirrapp.cc.R.id.daysDoneTextView;
 import static com.totirrapp.cc.SetCounter.getDaysDone;
 import static com.totirrapp.cc.SetCounter.getDaysLeft;
 import static com.totirrapp.cc.SetCounter.getDaysTDone;
@@ -27,39 +64,6 @@ import static com.totirrapp.cc.SetCounter.getWeeksLeft;
 import static com.totirrapp.cc.SetCounter.getWeeksTDone;
 import static com.totirrapp.cc.SetCounter.getWeeksTLeft;
 import static com.totirrapp.cc.SetCounter.updateCounter;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Locale;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.ExifInterface;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements SettingsFragment.SelectItemListener, View.OnClickListener {
 	public static Context			context;
@@ -74,6 +78,8 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 	private boolean					running				= true;
 	private detailsThread			MT;
 	private Bitmap					bg1;
+//    private OnClickListener		shortPress;
+//    private OnLongClickListener longPress;
 	// private HomeView testings;
 	private int count =0;
 
@@ -105,7 +111,8 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
 		temp2.setGravity(Gravity.CENTER);
 		mViewPager.setBackground(temp2);
-		setupHomeViewButtons();
+//        setupListeners();
+//        setupHomeViewButtons();
 
 	}
 	protected void onPause(){
@@ -124,15 +131,34 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+//        setupHomeViewButtons();
 	}
 
+/*    public void setupListeners(){
+        shortPress= new View.OnClickListener() {
+            public void onClick(View v){
+               Log.d("shortPress","viewID ="+v.getId());
+            }
+        };
+        longPress = new View.OnLongClickListener() {
+            public boolean onLongClick(View v){
+                    Log.d("shortPress","viewID ="+v.getId());
+                return false;
+            }
+        };
+    }*/
+
+
 	// ### test setting up home view buttons
-	private void setupHomeViewButtons(){
-		findViewById(R.id.daysDoneTextView).setOnClickListener(this);
+	public void setupHomeViewButtons(){
+        Log.i("setupHomeViewButtons","setupHomeViewButtons called");
+//		findViewById(daysDoneTextView).setOnClickListener(this);
+//        findViewById(daysDoneTextView).setOnClickListener(shortPress);
+//        findViewById(daysDoneTextView).setOnLongClickListener(longPress);
 	
 	}
 	public void onClick(View view){
-		if (view.getId() == R.id.daysDoneTextView) {
+		if (view.getId() == daysDoneTextView) {
 			count ++;
 			Log.i("done time", "click recorded correctly >>> "+ count);
 		}
@@ -242,14 +268,14 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		imm.showSoftInput(newTitle, InputMethodManager.SHOW_FORCED);
 		Button submitTitle = (Button) setTitle.findViewById(R.id.button2);
 		submitTitle.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view){
-				DBV.sTitle = newTitle.getText().toString();
-				DBUpdate("title", DBV.sTitle);
-				Log.i("title updated", "--> " + DBV.sTitle + " <--");
-				setFrag.loadList();
-				setTitle.dismiss();
-			}
-		});
+            public void onClick(View view) {
+                DBV.sTitle = newTitle.getText().toString();
+                DBUpdate("title", DBV.sTitle);
+                Log.i("title updated", "--> " + DBV.sTitle + " <--");
+                setFrag.loadList();
+                setTitle.dismiss();
+            }
+        });
 		newTitle.requestFocus();
 
 	}
@@ -261,16 +287,16 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		setBG.show();
 		Button wallpaperButton = (Button) setBG.findViewById(R.id.wallpaperButton);
 		wallpaperButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view){
-				setBG.dismiss();
-				DBV.sBgUrl = noImage;
-				db.open();
-				db.updatePic(1, DBV.sBgUrl);
-				db.close();
-				mViewPager.setBackgroundResource(0);
-				setFrag.loadList();
-			}
-		});
+            public void onClick(View view) {
+                setBG.dismiss();
+                DBV.sBgUrl = noImage;
+                db.open();
+                db.updatePic(1, DBV.sBgUrl);
+                db.close();
+                mViewPager.setBackgroundResource(0);
+                setFrag.loadList();
+            }
+        });
 		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
 		galleryButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view){
@@ -519,7 +545,7 @@ public class MainActivity extends FragmentActivity implements SettingsFragment.S
 		try {
 			if(percent == null){
 				percent = (TextView) findViewById(R.id.percDoneText);
-				timeDoneText = (TextView) findViewById(R.id.daysDoneTextView);
+				timeDoneText = (TextView) findViewById(daysDoneTextView);
 				timeLeftText = (TextView) findViewById(R.id.daysLeftTextView);
 				titleBot = (TextView) findViewById(R.id.titleBot);
 			}
