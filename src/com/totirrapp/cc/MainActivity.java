@@ -400,11 +400,12 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		db.close();
 	}
 	public void DBReadAll(){
-		Cursor myCursor = null;
+		Cursor myCursor;
 		try {
 			db.open();
-		} catch (SQLException sqle) {
-			throw sqle;
+		} catch (SQLException e) {
+            Log.e("DBReadAll error", "failed to open database");
+			throw e;
 		}
 		myCursor = db.getTable2("all", 1);
 		myCursor.moveToFirst();
@@ -415,9 +416,22 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		DBV.sEnd = myCursor.getString(1);
 		myCursor.moveToNext();
 		DBV.sBgUrl = myCursor.getString(1);
-		db.close();
-	}
-	// ### Details update method
+//////////////////////////////////test code /////////////////////
+        try {
+            myCursor = db.getRecord("all", 1);
+
+            Log.d("column count","-->"+myCursor.getColumnCount());
+            Log.d("column name (0)","-->"+myCursor.getColumnName(0));
+            Log.d("column name (1)","-->"+myCursor.getColumnName(1));
+            Log.d("column name (2)","-->"+myCursor.getColumnName(2));
+            Log.d("? count","-->"+myCursor.getCount());
+            Log.d("position","-->"+myCursor.getPosition());
+        } catch (SQLException e) {
+            Log.e("DBReadAll error", "failed to process table 1");
+            throw e;
+        }
+        db.close();
+    }
 
 	public void updateHomeView(){
 		try {
@@ -462,8 +476,8 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		}
 		@Override
 		public int getCount(){
-			// Show 4 total pages.
-			return 4;
+			// Show number of pages equal to chart count.
+			return DBV.chartCount;
 		}
 		@Override
 		public CharSequence getPageTitle(int position){

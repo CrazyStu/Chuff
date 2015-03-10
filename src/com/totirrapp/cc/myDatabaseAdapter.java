@@ -53,8 +53,8 @@ public class myDatabaseAdapter {
 			database.execSQL(CREATE_SETTINGS_TABLE2);
 			ContentValues initialValues = new ContentValues();
 			initialValues.put(KEY_TITLE,"to go Home!");
-			initialValues.put(KEY_START_DATE,"20/01/2014");
-			initialValues.put(KEY_END_DATE,"20/11/2014");
+			initialValues.put(KEY_START_DATE,"20/01/2015");
+			initialValues.put(KEY_END_DATE,"20/11/2015");
 			initialValues.put(KEY_PIC,"NULL");
 			database.insert(SETTINGS_TABLE, null, initialValues);
 			
@@ -64,11 +64,11 @@ public class myDatabaseAdapter {
 			database.insert(SET_TABLE2, null, newValues);
 			
 			newValues.put(KEY_SET,"Start Date");
-			newValues.put(KEY_VAL,"01/01/2014");
-			
+			newValues.put(KEY_VAL,"01/01/2015");
 			database.insert(SET_TABLE2, null, newValues);
+
 			newValues.put(KEY_SET,"End Date");
-			newValues.put(KEY_VAL,"20/11/2014");
+			newValues.put(KEY_VAL,"20/11/2015");
 			database.insert(SET_TABLE2, null, newValues);
 
 			newValues.put(KEY_SET,"Background");
@@ -154,6 +154,7 @@ public class myDatabaseAdapter {
 		}else if(dataType=="Settings"){
 			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_TITLE,KEY_START_DATE,KEY_END_DATE}, KEY_ROWID+"="+rowId, null, null, null, null, null);
 		}else{
+//            change the query to return all the columns :)
 			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_ROWID, KEY_START_DATE,KEY_END_DATE}, KEY_ROWID+"="+rowId, null, null, null, null, null);
 		}
 		if(myCursor!=null){

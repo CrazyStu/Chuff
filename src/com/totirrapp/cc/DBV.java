@@ -1,6 +1,7 @@
 package com.totirrapp.cc;
 
 public class DBV {
+        public static int chartCount = 3;
 		public static String sHeader = "I Can't Wait...";
 		public static String sTitle = "StaticTitle";
 		public static String sBgUrl = "StaticURL";
