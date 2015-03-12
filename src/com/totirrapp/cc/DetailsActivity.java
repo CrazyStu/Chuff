@@ -79,21 +79,18 @@ public class DetailsActivity extends Activity {
         }
     }
     public void DBReadAll(){
-        Cursor myCursor = null;
+        Cursor myCursor;
         try {
             db.open();
-        } catch (SQLException sqle) {
-            throw sqle;
+        } catch (SQLException e) {
+            Log.e("DBReadAll error", "failed to open database");
+            throw e;
         }
-        myCursor = db.getTable2("all", 1);
-        myCursor.moveToFirst();
+        myCursor = db.getChartNo(1);
         DBV.sTitle = myCursor.getString(1);
-        myCursor.moveToNext();
-        DBV.Sstart = myCursor.getString(1);
-        myCursor.moveToNext();
-        DBV.sEnd = myCursor.getString(1);
-        myCursor.moveToNext();
-        DBV.sBgUrl = myCursor.getString(1);
+        DBV.Sstart = myCursor.getString(2);
+        DBV.sEnd = myCursor.getString(3);
+        DBV.sBgUrl = myCursor.getString(4);
         db.close();
     }
     public void updateDetailsView(){

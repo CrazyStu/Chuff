@@ -3,19 +3,12 @@
     android:id="@+id/frag_help"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="#8c000000"
     android:paddingBottom="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
  >
 
-
-    <com.totirrapp.cc.HomeView
-        android:id="@+id/mainView01"
-        android:layout_width="fill_parent"
-        android:layout_height="800dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
 
     <ImageView
         android:id="@+id/progBar"
@@ -61,7 +54,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="left"
-            android:text="@string/title1"
+            android:text="@string/press_here"
             android:textColor="#000000"
             android:textSize="30sp" />
 
@@ -70,7 +63,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="@string/defaultTitle"
+            android:text="@string/change_title"
             android:textColor="#000000"
             android:textSize="40sp"
             android:textStyle="bold" />
@@ -92,7 +85,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="@string/daysDone"
+            android:text="@string/press_here"
             android:textColor="#000000"
             android:textSize="35sp" />
 
@@ -101,7 +94,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="@string/daysLeft"
+            android:text="@string/change_dates"
             android:textColor="#000000"
             android:textSize="40sp"
             android:textStyle="bold" />
@@ -117,7 +110,7 @@
         android:layout_gravity="center"
         android:layout_margin="200dp"
         android:textSize="30sp"
-        android:textAlignment="inherit"
+        android:textAlignment="gravity"
         android:singleLine="false"
         android:padding="0dp"
         android:maxWidth="250dp" />

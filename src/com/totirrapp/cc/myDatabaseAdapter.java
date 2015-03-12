@@ -12,20 +12,21 @@ public class myDatabaseAdapter {
 
 	public static final String TAG ="DBAdapter";
 	public static final String DATABASE_NAME = "settingsdata";
+    public static final String CHARTS_TABLE = "Chart_Table";
+
+    public static final String KEY_ROWID ="_id";
+    public static final String CHART_NAME = "Chart_Name";
+    public static final String KEY_TITLE1 = "Title1";
+    public static final String KEY_TITLE2 = "Title2";
+    public static final String KEY_START_DATE = "Start_Date";
+    public static final String KEY_END_DATE = "End_Date";
+    public static final String KEY_PIC = "Picture_URL";
+
+
 	public static final String SETTINGS_TABLE = "Settings_Table";
 	public static final String SET_TABLE2 = "Table2";
-	
-	public static final String KEY_SET ="Setting";
-	public static final String KEY_VAL ="Value";
-	
-	public static final String KEY_ROWID ="_id";
-	
-	public static final String KEY_TITLE = "Title";
-	public static final String KEY_START_DATE = "Start_Date";
-	public static final String KEY_END_DATE = "End_Date";
-	public static final String KEY_PIC = "Picture_URL";	
 
-	public static final String NoImage = "NoImage";
+
 	
 	private static DatabaseHelper myDatabaseHelper;
 	private static SQLiteDatabase db;
@@ -35,56 +36,59 @@ public class myDatabaseAdapter {
 	}
 	private static class DatabaseHelper extends SQLiteOpenHelper{
 		
-		private static final int DATABASE_VERSION=1;
-		private static final String CREATE_SETTINGS_TABLE = " create table "+SETTINGS_TABLE + " (_id integer primary key autoincrement," +
-				KEY_TITLE+" TEXT NOT NULL," +
-				KEY_START_DATE+" TEXT NOT NULL," +
-				KEY_END_DATE+" INTEGER NOT NULL," +
-				KEY_PIC+" TEXT NOT NULL);";
-		private static final String CREATE_SETTINGS_TABLE2 = " create table "+SET_TABLE2 + " (_id integer primary key autoincrement," +
-				KEY_SET+" TEXT NOT NULL," +
-				KEY_VAL+" TEXT NOT NULL);";
+		private static final int DATABASE_VERSION=3;
+
+        private static final String CREATE_CHART_TABLE = " create table if not exists "+CHARTS_TABLE + " (_id integer primary key autoincrement," +
+                CHART_NAME+" TEXT," +
+                KEY_TITLE1+" TEXT," +
+                KEY_TITLE2+" TEXT," +
+                KEY_START_DATE+" TEXT," +
+                KEY_END_DATE+" TEXT," +
+                KEY_PIC+" TEXT);";
+        private static final String TRANSFER_DATA = "insert into "+CHARTS_TABLE+" ("+
+                KEY_ROWID+","+
+                KEY_TITLE2+","+
+                KEY_START_DATE+","+
+                KEY_END_DATE+","+
+                KEY_PIC+") select * from "+SETTINGS_TABLE+" LIMIT 1";
+        private static final String FILL_BLANKS = "update "+CHARTS_TABLE+" set "+CHART_NAME+" = 'My Chuff Chart', "+KEY_TITLE1+" ='I can''t wait'";
+
 		public DatabaseHelper(Context context){
 			super(context, DATABASE_NAME,null,DATABASE_VERSION);
 		}
 		public void onCreate(SQLiteDatabase database){
 			Log.i("Database", "No DB try to create...");
-			database.execSQL(CREATE_SETTINGS_TABLE);
-			database.execSQL(CREATE_SETTINGS_TABLE2);
-			ContentValues initialValues = new ContentValues();
-			initialValues.put(KEY_TITLE,"to go Home!");
-			initialValues.put(KEY_START_DATE,"20/01/2015");
-			initialValues.put(KEY_END_DATE,"20/11/2015");
-			initialValues.put(KEY_PIC,"NULL");
-			database.insert(SETTINGS_TABLE, null, initialValues);
-			
-			ContentValues newValues = new ContentValues();
-			newValues.put(KEY_SET,"Title");
-			newValues.put(KEY_VAL,"to go home!");
-			database.insert(SET_TABLE2, null, newValues);
-			
-			newValues.put(KEY_SET,"Start Date");
-			newValues.put(KEY_VAL,"01/01/2015");
-			database.insert(SET_TABLE2, null, newValues);
-
-			newValues.put(KEY_SET,"End Date");
-			newValues.put(KEY_VAL,"20/11/2015");
-			database.insert(SET_TABLE2, null, newValues);
-
-			newValues.put(KEY_SET,"Background");
-			newValues.put(KEY_VAL,"Choose a background");
-			database.insert(SET_TABLE2, null, newValues);
-			Log.i("db", "New Database Created :D");	
+            createChartTable(database);
+			Log.i("Database", "No previous information ws found new Database was created :D");
 		}
+        @Override
+        public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+            Log.w(TAG,"Upgrade required from "+oldVersion+" to " + newVersion + ". please report any errors.");
+            createChartTable(database);
+            transferTableData(database);
+            database.execSQL("drop table if exists "+SET_TABLE2);
+            database.execSQL("drop table if exists "+SETTINGS_TABLE);
+
+            Log.i("Upgrade Complete", "Old data preserved,old tables gone");
+
+        }
+        public void createChartTable(SQLiteDatabase database){
+            Log.i("Database", "try to create chart table");
+            database.execSQL(CREATE_CHART_TABLE);
+            Log.i("Database", "Chart Table Created - Table is currently blank");
+        }
 		public void onOpen(SQLiteDatabase database){
 			Log.i("Database", ">>>>DB OPEN<<<<");
 		}
-		@Override
-		public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-			Log.w(TAG,"Upgrading database from version"+oldVersion+" to" + newVersion + ", which will destroy all old data");
-			database.execSQL("DROP TABLE IF EXISTS todo");
-			onCreate(database);
-		}	
+
+
+        public void transferTableData(SQLiteDatabase database){
+            Log.i("Database transfer", "Attempt database transfer using sql code");
+            database.execSQL(TRANSFER_DATA);
+            Log.i("Database transfer", "Attempt to fill blanks using sql code");
+            database.execSQL(FILL_BLANKS);
+            Log.i("Database transfer", "Old data inserted correctly!!");
+        }
 	}
 	public myDatabaseAdapter open() throws SQLException{
 		db = myDatabaseHelper.getWritableDatabase();
@@ -94,83 +98,68 @@ public class myDatabaseAdapter {
 		myDatabaseHelper.close();
 		Log.i("Database", ">>>>DB Closed<<<<");
 	}
-	public boolean updateDates(long rowId, String newSdate,String newEdate){
-		ContentValues args = new ContentValues();
-		args.put(KEY_START_DATE, newSdate);
-		args.put(KEY_END_DATE, newEdate);
-		
-		ContentValues args2 = new ContentValues();
-		args2.put(KEY_VAL, newSdate);
-		db.update(SET_TABLE2, args2, KEY_ROWID+"="+2,null);
-		args2.put(KEY_VAL, newEdate);
-		db.update(SET_TABLE2, args2, KEY_ROWID+"="+3,null);
-		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
-	}
+//    Update database information
+/*
+    public void addValuesTest(){
+        ContentValues testValues = new ContentValues();
+        testValues.put(KEY_TITLE, "to go Home!");
+        testValues.put(KEY_START_DATE, "20/01/2015");
+        testValues.put(KEY_END_DATE, "20/11/2015");
+        testValues.put(KEY_PIC, "NULL");
+       db.insert(SETTINGS_TABLE,null, testValues);
+    }
+*/
+
 	public boolean updateStartDate(long rowId, String newSdate){
 		ContentValues args = new ContentValues();
 		args.put(KEY_START_DATE, newSdate);
-		ContentValues args2 = new ContentValues();
-		args2.put(KEY_VAL, newSdate);
-		db.update(SET_TABLE2, args2, KEY_ROWID+"="+2,null);
-		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+		return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
 	}
 	public boolean updateEndDate(long rowId, String newEdate){
 		ContentValues args = new ContentValues();
-		args.put(KEY_START_DATE, newEdate);
-		ContentValues args2 = new ContentValues();
-		args2.put(KEY_VAL, newEdate);
-		db.update(SET_TABLE2, args2, KEY_ROWID+"="+3,null);
-		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+		args.put(KEY_END_DATE, newEdate);
+		return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
 	}
 	public boolean updatePic(long rowId, String url){
+        Log.i("updatePic", url);
 		ContentValues args = new ContentValues();
-		Log.i("updatePic", "updatePicture");
 		args.put(KEY_PIC, url);
-		
-		ContentValues args2 = new ContentValues();
-		args2.put(KEY_VAL, url);
-		db.update(SET_TABLE2, args2, KEY_ROWID+"="+4,null);
-		
-		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+		return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
 	}
 	public boolean updateTitle(long rowId, String url){
 		ContentValues args = new ContentValues();
 		Log.i("updateTitle", "updateTitle");
-		args.put(KEY_TITLE, url);
-		ContentValues args2 = new ContentValues();
-		args2.put(KEY_VAL, url);
-		db.update(SET_TABLE2, args2, KEY_ROWID+"="+1,null);
-		return db.update(SETTINGS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+		args.put(KEY_TITLE2, url);
+		return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
 	}
 	public boolean deleteRecord(long rowId){
 		return db.delete(SETTINGS_TABLE, KEY_ROWID+"="+rowId, null)>0;
 	}
-	public Cursor getRecord(String dataType, long rowId)throws SQLException{
+
+
+//    Retrieve Database Information
+	public Cursor getAllRecords()throws SQLException{
 		Cursor myCursor;
-		if(dataType=="background"){
-			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_ROWID, KEY_PIC}, KEY_ROWID+"="+rowId, null, null, null, null, null);
-		}else if(dataType=="title"){
-			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_ROWID, KEY_TITLE}, KEY_ROWID+"="+rowId, null, null, null, null, null);
-		}else if(dataType=="Settings"){
-			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_TITLE,KEY_START_DATE,KEY_END_DATE}, KEY_ROWID+"="+rowId, null, null, null, null, null);
-		}else{
-//            change the query to return all the columns :)
-			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_ROWID, KEY_START_DATE,KEY_END_DATE}, KEY_ROWID+"="+rowId, null, null, null, null, null);
-		}
-		if(myCursor!=null){
-			myCursor.moveToFirst();
-		}
-		return myCursor;
-	}	
-	public Cursor getTable2(String dataType, long rowId)throws SQLException{
-		Cursor myCursor = null;
-		if(dataType=="all"){
-			myCursor = db.query(false, SET_TABLE2, new String[]{KEY_SET, KEY_VAL,KEY_ROWID}, null, null, null, null, null, null);
-		}
+			myCursor = db.query(true, SETTINGS_TABLE, new String[]{KEY_ROWID,CHART_NAME,KEY_TITLE1,KEY_TITLE2,KEY_START_DATE,KEY_END_DATE,KEY_PIC}, null, null, null, null, null, null);
 		if(myCursor!=null){
 			myCursor.moveToFirst();
 		}
 		return myCursor;
 	}
-	
+    public Cursor getChartNo(int rowId)throws SQLException{
+        Cursor myCursor;
+            myCursor = db.query(true, CHARTS_TABLE, new String[]{KEY_ROWID,KEY_TITLE2,KEY_START_DATE,KEY_END_DATE,KEY_PIC},KEY_ROWID+"="+rowId, null, null, null, null, null);
+        if(myCursor!=null){
+            myCursor.moveToFirst();
+        }
+        return myCursor;
+    }
+    public Cursor chartCount()throws SQLException{
+        Cursor myCursor;
+        myCursor = db.query(true, CHARTS_TABLE, new String[]{KEY_ROWID},null, null, null, null, null, null);
+        if(myCursor!=null){
+            myCursor.moveToFirst();
+        }
+        return myCursor;
+    }
 }

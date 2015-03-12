@@ -1,6 +1,8 @@
 package com.totirrapp.cc;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,6 +26,7 @@ public class HomeFragment extends Fragment{
         // the callback interface. If not, it throws an exception
         try {
             call = (clickCallback) activity;
+
         } catch (ClassCastException e) {
             Log.d("attach test","implementation failed");
             e.printStackTrace();
@@ -34,11 +37,27 @@ public class HomeFragment extends Fragment{
 		rootView = inflater.inflate(layout.frag_home,container, false);
         setupListeners();
         setupButtons();
+        call.initiateBG();
 		return rootView;
 	}
+     public void setNewBackground(BitmapDrawable bmp){
+         try{
+             rootView.setBackground(bmp);
+         }catch(Exception e){
+             e.printStackTrace();
+         }
+     }
+    public void removeBackground(){
+        try{
+            rootView.setBackgroundColor(Color.TRANSPARENT);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
     public interface clickCallback {
         public void onShortPress(int v);
         public void onLongPress(int v);
+        public void initiateBG();
     }
     public void setupListeners(){
         shortPress= new View.OnClickListener() {

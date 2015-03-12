@@ -49,6 +49,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 	private ViewPager				mViewPager;
 	private HomeFragment			homeFrag;
 	private HelpFragment            helpFrag;
+    private NewFragment             newFrag;
 	private String					noImage				= "Android Wallpaper";
 	private boolean					running				= true;
 	private detailsThread			MT;
@@ -64,14 +65,14 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		super.onCreate(savedInstanceState);
 		context = this.getBaseContext();
 		db = new myDatabaseAdapter(context);
-		DBReadAll();
+        dbChartCount();
+        DBReadChart(1);
 		Log.i("DBV1", DBV.sTitle);
 		Log.i("DBV2", DBV.Sstart);
 		Log.i("DBV3", DBV.sEnd);
 		Log.i("DBV4", DBV.sBgUrl);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		// setTheme(R.style.myTheme2);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -79,9 +80,8 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setCurrentItem(1);
 		mViewPager.setPageMargin(0);
-		BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
-		temp2.setGravity(Gravity.CENTER);
-		mViewPager.setBackground(temp2);
+
+
 	}
 	protected void onPause(){
 		super.onPause();
@@ -101,10 +101,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		}
 	}
 	public void onShortPress(int v){
-        if (v == R.id.chart_title) {
-           View test = findViewById(v);
-            test.setVisibility(View.INVISIBLE);
-        }else if (v == R.id.frag_home_parent_view) {
+      if (v == R.id.frag_home_parent_view) {
             Intent intent = new Intent(this, DetailsActivity.class);
             startActivity(intent);
         }
@@ -119,6 +116,10 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
         } else if (v == R.id.frag_home_parent_view) {
             myBGDialog();
         }
+    }
+    public void initiateBG(){
+        ImageThread testMe = new ImageThread();
+        testMe.run("initiateBG()");
     }
 
 	private void myDateDialog(boolean start){
@@ -236,8 +237,9 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
                 db.open();
                 db.updatePic(1, DBV.sBgUrl);
                 db.close();
-                mViewPager.setBackgroundResource(0);
+//                mViewPager.setBackgroundResource(0);
 //                setFrag.loadList();
+                homeFrag.removeBackground();
             }
         });
 		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
@@ -269,10 +271,9 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			db.updatePic(1, picturePath);
 			db.close();
 			DBV.sBgUrl = picturePath;
-//			setFrag.loadList();
-			BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
-			temp2.setGravity(Gravity.CENTER);
-			mViewPager.setBackground(temp2);
+
+            ImageThread testMe = new ImageThread();
+            testMe.run("activityResult");
 		}
 
 	}
@@ -297,7 +298,8 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 				loadSelectedImage(bgURL, screenW, screenH);
 			} else {
 				Log.i("BgHandler", "Image not found---Loading default backgorund");
-				mViewPager.setBackgroundResource(0);
+//				mViewPager.setBackgroundResource(0);
+                homeFrag.removeBackground();
 			}
 		}
 
@@ -399,40 +401,33 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		}
 		db.close();
 	}
-	public void DBReadAll(){
-		Cursor myCursor;
-		try {
-			db.open();
-		} catch (SQLException e) {
-            Log.e("DBReadAll error", "failed to open database");
-			throw e;
-		}
-		myCursor = db.getTable2("all", 1);
-		myCursor.moveToFirst();
-		DBV.sTitle = myCursor.getString(1);
-		myCursor.moveToNext();
-		DBV.Sstart = myCursor.getString(1);
-		myCursor.moveToNext();
-		DBV.sEnd = myCursor.getString(1);
-		myCursor.moveToNext();
-		DBV.sBgUrl = myCursor.getString(1);
-//////////////////////////////////test code /////////////////////
+    public void dbChartCount(){
+        Cursor myCursor;
         try {
-            myCursor = db.getRecord("all", 1);
-
-            Log.d("column count","-->"+myCursor.getColumnCount());
-            Log.d("column name (0)","-->"+myCursor.getColumnName(0));
-            Log.d("column name (1)","-->"+myCursor.getColumnName(1));
-            Log.d("column name (2)","-->"+myCursor.getColumnName(2));
-            Log.d("? count","-->"+myCursor.getCount());
-            Log.d("position","-->"+myCursor.getPosition());
+            db.open();
+            myCursor = db.chartCount();
+            DBV.chartCount = myCursor.getCount();
+            db.close();
         } catch (SQLException e) {
-            Log.e("DBReadAll error", "failed to process table 1");
+            Log.e("DBReadAll error", "failed to count database");
             throw e;
         }
+    }
+    public void DBReadChart(int x){
+        Cursor myCursor;
+        try {
+            db.open();
+        } catch (SQLException e) {
+            Log.e("DBReadAll error", "failed to open database");
+            throw e;
+        }
+        myCursor = db.getChartNo(x);
+        DBV.sTitle = myCursor.getString(1);
+        DBV.Sstart = myCursor.getString(2);
+        DBV.sEnd = myCursor.getString(3);
+        DBV.sBgUrl = myCursor.getString(4);
         db.close();
     }
-
 	public void updateHomeView(){
 		try {
 			if(percent == null){
@@ -470,28 +465,31 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			if (position == 0) {
                 helpFrag = new HelpFragment();
                 return helpFrag;
-			} else {
+            }else if(position == DBV.chartCount+1) {
+                newFrag = new NewFragment();
+                return newFrag;
+            } else {
                 homeFrag = new HomeFragment();
-                return homeFrag;			}
+                return homeFrag;
+            }
 		}
 		@Override
 		public int getCount(){
-			// Show number of pages equal to chart count.
-			return DBV.chartCount;
+			// Show number of pages equal to chart count +2 (help and new chart pages).
+			return DBV.chartCount+2;
 		}
 		@Override
 		public CharSequence getPageTitle(int position){
 			Locale l = Locale.getDefault();
-			switch (position) {
-			case 0:
-				return getString(R.string.title_section1).toUpperCase(l);
-			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
-			}
-			return null;
+            if (position==0) {
+                return getString(R.string.title_help).toUpperCase(l);
+            }else if(position == DBV.chartCount+1) {
+                return getString(R.string.title_new).toUpperCase(l);
+            }else{
+                return getString(R.string.title_chart).toUpperCase(l);
+            }
 		}
 	}
-
     private class detailsThread extends Thread {
         public void run(){
             Log.e("MT State", MT.getState() + "");
@@ -503,6 +501,23 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
                 } catch (Exception e) {e.printStackTrace();}
             }
             Log.e("MT State", MT.getState() +"stopped");
+        }
+    }
+
+    private class ImageThread extends Thread {
+        public void run(String owner){
+            Log.e("imageThread","Thread started by "+owner);
+            try {
+                BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
+
+                temp2.setGravity(Gravity.CENTER);
+
+                homeFrag.setNewBackground(temp2);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Log.e("imageThread","Thread ended");
         }
     }
 
