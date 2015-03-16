@@ -38,8 +38,8 @@ public class myDatabaseAdapter {
 		
 		private static final int DATABASE_VERSION=3;
 
-        private static final String CREATE_CHART_TABLE = " create table if not exists "+CHARTS_TABLE + " (_id integer primary key autoincrement," +
-                CHART_NAME+" TEXT," +
+        private static final String CREATE_CHART_TABLE = " create table if not exists "+CHARTS_TABLE + " (_id integer primary key," +
+                CHART_NAME+" TEXT UNIQUE ON CONFLICT ABORT," +
                 KEY_TITLE1+" TEXT," +
                 KEY_TITLE2+" TEXT," +
                 KEY_START_DATE+" TEXT," +
@@ -99,17 +99,17 @@ public class myDatabaseAdapter {
 		Log.i("Database", ">>>>DB Closed<<<<");
 	}
 //    Update database information
-/*
-    public void addValuesTest(){
-        ContentValues testValues = new ContentValues();
-        testValues.put(KEY_TITLE, "to go Home!");
-        testValues.put(KEY_START_DATE, "20/01/2015");
-        testValues.put(KEY_END_DATE, "20/11/2015");
-        testValues.put(KEY_PIC, "NULL");
-       db.insert(SETTINGS_TABLE,null, testValues);
-    }
-*/
 
+public void newChart(String v1, String v2, String v3, String v4, String v5, String v6){
+    ContentValues newChartValues = new ContentValues();
+    newChartValues.put(CHART_NAME, v1);
+    newChartValues.put(KEY_TITLE2, v2);
+    newChartValues.put(KEY_TITLE2, v3);
+    newChartValues.put(KEY_START_DATE, v4);
+    newChartValues.put(KEY_END_DATE, v5);
+    newChartValues.put(KEY_PIC, v6);
+    db.insert(CHARTS_TABLE,null, newChartValues);
+}
 	public boolean updateStartDate(long rowId, String newSdate){
 		ContentValues args = new ContentValues();
 		args.put(KEY_START_DATE, newSdate);
@@ -132,9 +132,15 @@ public class myDatabaseAdapter {
 		args.put(KEY_TITLE2, url);
 		return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
 	}
-	public boolean deleteRecord(long rowId){
-		return db.delete(SETTINGS_TABLE, KEY_ROWID+"="+rowId, null)>0;
-	}
+//	public boolean deleteRecord(int rowId){
+//        Log.e("Delete Record", "Attempting to delete chart no"+rowId);
+//		return db.delete(CHARTS_TABLE, KEY_ROWID+"="+rowId, null)>0;
+//	}
+
+    public boolean deleteRecord(String name){
+        Log.e("Delete Record", "Attempting to delete chart name..."+name);
+        return db.delete(CHARTS_TABLE, CHART_NAME+" = '"+name+"'", null)>0;
+    }
 
 
 //    Retrieve Database Information
@@ -153,6 +159,19 @@ public class myDatabaseAdapter {
             myCursor.moveToFirst();
         }
         return myCursor;
+    }
+    public String getChartName(int rowId)throws SQLException{
+        Cursor myCursor;
+        myCursor = db.query(true, CHARTS_TABLE, new String[]{CHART_NAME},null, null, null, null, null, null);
+        if(myCursor!=null){
+            myCursor.moveToFirst();
+            int i=1;
+            while(i<rowId){
+                myCursor.moveToNext();
+                i++;
+            }
+        }
+        return myCursor.getString(0);
     }
     public Cursor chartCount()throws SQLException{
         Cursor myCursor;

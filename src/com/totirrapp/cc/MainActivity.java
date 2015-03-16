@@ -41,7 +41,7 @@ import static com.totirrapp.cc.SetCounter.getDaysTLeft;
 import static com.totirrapp.cc.SetCounter.getHoursTDone;
 import static com.totirrapp.cc.SetCounter.getHoursTLeft;
 
-public class MainActivity extends FragmentActivity implements HomeFragment.clickCallback {
+public class MainActivity extends FragmentActivity implements HomeFragment.clickCallback, NewFragment.newChartCallback{
         public static Context			context;
 	private myDatabaseAdapter		db					= null;
 	private static int				RESULT_LOAD_IMAGE	= 1;
@@ -58,7 +58,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 	private TextView				timeDoneText		= null;
 	private TextView				timeLeftText		= null;
 	private TextView				titleBot			= null;
-    private Intent                  intent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -66,12 +65,15 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		context = this.getBaseContext();
 		db = new myDatabaseAdapter(context);
         dbChartCount();
-        DBReadChart(1);
-		Log.i("DBV1", DBV.sTitle);
-		Log.i("DBV2", DBV.Sstart);
-		Log.i("DBV3", DBV.sEnd);
-		Log.i("DBV4", DBV.sBgUrl);
-
+        if(DBV.chartCount>0) {
+            DBReadChart(1);
+            Log.i("DBV1", DBV.sTitle);
+            Log.i("DBV2", DBV.Sstart);
+            Log.i("DBV3", DBV.sEnd);
+            Log.i("DBV4", DBV.sBgUrl);
+        }else{
+            Log.e("No Charts Found","HELP!>!!??!");
+        }
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
@@ -122,6 +124,22 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
         testMe.run("initiateBG()");
     }
 
+    public void newChartRequest(int v){
+        String t1 = "test1";
+        String t2 = "test2";
+        String t3 = "test3";
+        String t4 = "01/02/2015";
+        String t5 = "11/11/2015";
+        String t6 = "test6";
+        try {
+            db.open();
+            db.newChart(t1, t2, t3, t4, t5, t6);
+            db.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
 	private void myDateDialog(boolean start){
 		final Dialog setDate = new Dialog(this);
 		setDate.setContentView(R.layout.dialog_dates);
@@ -237,18 +255,30 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
                 db.open();
                 db.updatePic(1, DBV.sBgUrl);
                 db.close();
-//                mViewPager.setBackgroundResource(0);
-//                setFrag.loadList();
                 homeFrag.removeBackground();
             }
         });
 		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
-		galleryButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view){
-				setBG.dismiss();
-				choosePic();
-			}
-		});
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view){
+                setBG.dismiss();
+                choosePic();
+            }
+        });
+        Button deleteButton = (Button) setBG.findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view){
+                String num = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
+                Log.e("which page am i on?", "this one...  " + num);
+                setBG.dismiss();
+                db.open();
+                db.deleteRecord(num);
+                db.close();
+
+                mSectionsPagerAdapter.notifyDataSetChanged();
+                dbChartCount();
+            }
+        });
 	}
 	// ## Choose Picture / Update DB / Scale Image / Set Background
 	public void choosePic(){
@@ -408,6 +438,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             myCursor = db.chartCount();
             DBV.chartCount = myCursor.getCount();
             db.close();
+            Log.e("#-- Chart Count--# ", DBV.chartCount+" charts found");
         } catch (SQLException e) {
             Log.e("DBReadAll error", "failed to count database");
             throw e;
@@ -486,7 +517,15 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             }else if(position == DBV.chartCount+1) {
                 return getString(R.string.title_new).toUpperCase(l);
             }else{
-                return getString(R.string.title_chart).toUpperCase(l);
+                String name = "no name";
+                try {
+                    db.open();
+                    name = db.getChartName(position);
+                    db.close();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                return name;
             }
 		}
 	}

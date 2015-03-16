@@ -37,5 +37,6 @@
     <string name="press_here">Press and hold here</string>
     <string name="change_dates">to change dates</string>
     <string name="change_title">to change title</string>
+    <string name="delete_chart">Delete This Chart</string>
 
 </resources>
