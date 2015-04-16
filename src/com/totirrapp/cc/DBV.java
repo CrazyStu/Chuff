@@ -2,6 +2,7 @@ package com.totirrapp.cc;
 
 public class DBV {
         public static int chartCount = 2;
+	public static String sName = "Chart Name Test";
 		public static String sHeader = "I Can't Wait...";
 		public static String sTitle = "StaticTitle";
 		public static String sBgUrl = "StaticURL";

@@ -1,6 +1,7 @@
 package com.totirrapp.cc;
 
 import android.app.Dialog;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,6 +23,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -58,22 +60,14 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 	private TextView				timeDoneText		= null;
 	private TextView				timeLeftText		= null;
 	private TextView				titleBot			= null;
+	private FragmentManager fm = this.getSupportFragmentManager();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		context = this.getBaseContext();
 		db = new myDatabaseAdapter(context);
-        dbChartCount();
-        if(DBV.chartCount>0) {
-            DBReadChart(1);
-            Log.i("DBV1", DBV.sTitle);
-            Log.i("DBV2", DBV.Sstart);
-            Log.i("DBV3", DBV.sEnd);
-            Log.i("DBV4", DBV.sBgUrl);
-        }else{
-            Log.e("No Charts Found","HELP!>!!??!");
-        }
+		processDB();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
@@ -82,8 +76,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setCurrentItem(1);
 		mViewPager.setPageMargin(0);
-
-
 	}
 	protected void onPause(){
 		super.onPause();
@@ -93,13 +85,24 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 	protected void onResume(){
 		super.onResume();
 		running = true;
-		// Log.e("MT State", MT.getState()+"");
 		try {
 			MT = null;
 			MT = new detailsThread();
 			MT.start();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	public void processDB(){
+		dbChartCount();
+		if(DBV.chartCount>0) {
+			DBReadChart(1);
+			Log.i("DBV1", DBV.sTitle);
+			Log.i("DBV2", DBV.Sstart);
+			Log.i("DBV3", DBV.sEnd);
+			Log.i("DBV4", DBV.sBgUrl);
+		}else{
+			Log.e("No Charts Found","HELP!>!!??!");
 		}
 	}
 	public void onShortPress(int v){
@@ -123,22 +126,36 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
         ImageThread testMe = new ImageThread();
         testMe.run("initiateBG()");
     }
-
     public void newChartRequest(int v){
-        String t1 = "test1";
-        String t2 = "test2";
-        String t3 = "test3";
-        String t4 = "01/02/2015";
-        String t5 = "11/11/2015";
-        String t6 = "test6";
-        try {
-            db.open();
-            db.newChart(t1, t2, t3, t4, t5, t6);
-            db.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        mSectionsPagerAdapter.notifyDataSetChanged();
+
+		final Dialog newChartDialog = new Dialog(this);
+		newChartDialog.setContentView(R.layout.dialog_title);
+		newChartDialog.setTitle("Chart Name");
+		final EditText newTitle = (EditText) newChartDialog.findViewById(R.id.setNewTitle);
+		newTitle.setText(DBV.sName);
+		newChartDialog.show();
+		Button submitChart = (Button) newChartDialog.findViewById(R.id.button2);
+		submitChart.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				DBV.sName = newTitle.getText().toString();
+				int x = mViewPager.getCurrentItem();
+				String t1 = DBV.sName;
+				String t2 = "I can't wait...";
+				String t3 = "for what?";
+				String t4 = "01/01/2015";
+				String t5 = "11/12/2015";
+				String t6 = "No Image";
+				try {
+					db.open();
+					db.newChart(t1, t2, t3, t4, t5, t6);
+					db.close();
+					removePage(x);
+				}catch (Exception e){
+					e.printStackTrace();
+				}
+				newChartDialog.dismiss();
+			}
+		});
     }
 	private void myDateDialog(boolean start){
 		final Dialog setDate = new Dialog(this);
@@ -174,7 +191,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 					}
 					DBV.Sstart  = Sday + "/" + (Smonth+1) + "/" + Syear;
 					DBUpdate("startDate", DBV.Sstart);
-//					setFrag.loadList();
 					setDate.dismiss();
 					SetCounter.updateCounterAndDates();
 				}
@@ -204,7 +220,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 						DBV.sEnd = Eday + "/" + (Emonth+1) + "/" + Eyear;	
 					}
 					DBUpdate("endDate", DBV.sEnd);
-//					setFrag.loadList();
 					setDate.dismiss();
 					SetCounter.updateCounterAndDates();
 				}
@@ -234,12 +249,10 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
                 DBV.sTitle = newTitle.getText().toString();
                 DBUpdate("title", DBV.sTitle);
                 Log.i("title updated", "--> " + DBV.sTitle + " <--");
-//                setFrag.loadList();
                 setTitle.dismiss();
             }
         });
 		newTitle.requestFocus();
-
 	}
 	private void myBGDialog(){
 		final Dialog setBG = new Dialog(this);
@@ -268,16 +281,14 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
         Button deleteButton = (Button) setBG.findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
-                String num = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
-                Log.e("which page am i on?", "this one...  " + num);
-                setBG.dismiss();
-                db.open();
+				String num = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
+				setBG.dismiss();
+				db.open();
                 db.deleteRecord(num);
-                db.close();
-
-                mSectionsPagerAdapter.notifyDataSetChanged();
-                dbChartCount();
-            }
+				db.close();
+				int x = mViewPager.getCurrentItem();
+				removePage(x);
+			}
         });
 	}
 	// ## Choose Picture / Update DB / Scale Image / Set Background
@@ -328,7 +339,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 				loadSelectedImage(bgURL, screenW, screenH);
 			} else {
 				Log.i("BgHandler", "Image not found---Loading default backgorund");
-//				mViewPager.setBackgroundResource(0);
                 homeFrag.removeBackground();
 			}
 		}
@@ -412,7 +422,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 
 		return bg1;
 	}
-
 	// ### Update Database value
 	public void DBUpdate(String item,String data){
 		try {
@@ -459,6 +468,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
         DBV.sBgUrl = myCursor.getString(4);
         db.close();
     }
+
 	public void updateHomeView(){
 		try {
 			if(percent == null){
@@ -486,21 +496,39 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			e.printStackTrace();
 		}
 	}
-	
+	public void removePage(int x){
+		recreate();
+		long itemId = (long) x;
+		FragmentTransaction ft;
+		String name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
+		Fragment myFragment= fm.findFragmentByTag(name);
+		if (myFragment != null) {
+			ft = fm.beginTransaction();
+			ft.remove(myFragment);
+			ft.commit();
+		} else {
+			Log.e("Fragment NOT Found", "??? #" + itemId + ": f=" + myFragment);
+		}
+		mViewPager.getAdapter().notifyDataSetChanged();
+	}
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 		@Override
 		public Fragment getItem(int position){
+			Log.e("getItem() Called","Position="+position+". DBV.chartCount="+DBV.chartCount);
 			if (position == 0) {
                 helpFrag = new HelpFragment();
+				Log.i("Get Item","num="+position+" HelpFrag");
                 return helpFrag;
             }else if(position == DBV.chartCount+1) {
                 newFrag = new NewFragment();
+				Log.i("Get Item","num="+position+" NewFrag");
                 return newFrag;
             } else {
                 homeFrag = new HomeFragment();
+				Log.i("Get Item","num="+position+" HomeFrag");
                 return homeFrag;
             }
 		}
@@ -508,6 +536,17 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		public int getCount(){
 			// Show number of pages equal to chart count +2 (help and new chart pages).
 			return DBV.chartCount+2;
+		}
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object){
+			Log.d("destroy","requestPage Destroy");
+			super.destroyItem(container,position,object);
+
+		}
+		@Override
+		public Object instantiateItem (ViewGroup container, int position) {
+			Log.d("create", "requestPage create at postition--"+position);
+			return super.instantiateItem(container,position);
 		}
 		@Override
 		public CharSequence getPageTitle(int position){
@@ -542,7 +581,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             Log.e("MT State", MT.getState() +"stopped");
         }
     }
-
     private class ImageThread extends Thread {
         public void run(String owner){
             Log.e("imageThread","Thread started by "+owner);
@@ -559,5 +597,4 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             Log.e("imageThread","Thread ended");
         }
     }
-
 }
