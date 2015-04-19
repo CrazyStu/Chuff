@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -45,7 +46,8 @@ import static com.totirrapp.cc.SetCounter.getHoursTLeft;
 
 public class MainActivity extends FragmentActivity implements HomeFragment.clickCallback, NewFragment.newChartCallback{
         public static Context			context;
-	private myDatabaseAdapter		db					= null;
+	private databaseAdapter db					= null;
+	private databaseReader dbr					= null;
 	private static int				RESULT_LOAD_IMAGE	= 1;
 	private SectionsPagerAdapter	mSectionsPagerAdapter;
 	private ViewPager				mViewPager;
@@ -61,13 +63,19 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 	private TextView				timeLeftText		= null;
 	private TextView				titleBot			= null;
 	private FragmentManager fm = this.getSupportFragmentManager();
+	private ArrayList<chart> chartList = new ArrayList<chart>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		context = this.getBaseContext();
-		db = new myDatabaseAdapter(context);
-		processDB();
+		db = new databaseAdapter(context);
+		dbr = new databaseReader();
+		initCharts();
+
+		chart chart1 = new chart(1);
+		chartList.add(chart1);
+//		processDB();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
@@ -93,18 +101,39 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			e.printStackTrace();
 		}
 	}
-	public void processDB(){
-		dbChartCount();
+	public void initCharts(){
+		dbr.getChartCount();
 		if(DBV.chartCount>0) {
-			DBReadChart(1);
-			Log.i("DBV1", DBV.sTitle);
-			Log.i("DBV2", DBV.Sstart);
-			Log.i("DBV3", DBV.sEnd);
-			Log.i("DBV4", DBV.sBgUrl);
-		}else{
-			Log.e("No Charts Found","HELP!>!!??!");
+			int x = 0;
+			chart tempChart;
+			while (x < DBV.chartCount) {
+				x++;
+				tempChart = new chart(x);
+				chartList.add(tempChart);
+			}
+			getChartValues(1);
 		}
 	}
+	public void getChartValues(int x){
+		ArrayList<String> tempList = chartList.get(x-1).getValues();
+		DBV.sName = tempList.get(0);
+		DBV.sTitle = tempList.get(2);
+		DBV.Sstart = tempList.get(3);
+		DBV.sEnd = tempList.get(4);
+		DBV.sBgUrl = tempList.get(5);
+	}
+//	public void processDB(){
+//		dbChartCount();
+//		if(DBV.chartCount>0) {
+//			DBReadChart(1);
+//			Log.i("DBV1", DBV.sTitle);
+//			Log.i("DBV2", DBV.Sstart);
+//			Log.i("DBV3", DBV.sEnd);
+//			Log.i("DBV4", DBV.sBgUrl);
+//		}else{
+//			Log.e("No Charts Found","HELP!>!!??!");
+//		}
+//	}
 	public void onShortPress(int v){
       if (v == R.id.frag_home_parent_view) {
             Intent intent = new Intent(this, DetailsActivity.class);
@@ -453,21 +482,21 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             throw e;
         }
     }
-    public void DBReadChart(int x){
-        Cursor myCursor;
-        try {
-            db.open();
-        } catch (SQLException e) {
-            Log.e("DBReadAll error", "failed to open database");
-            throw e;
-        }
-        myCursor = db.getChartNo(x);
-        DBV.sTitle = myCursor.getString(1);
-        DBV.Sstart = myCursor.getString(2);
-        DBV.sEnd = myCursor.getString(3);
-        DBV.sBgUrl = myCursor.getString(4);
-        db.close();
-    }
+//    public void DBReadChart(int x){
+//        Cursor myCursor;
+//        try {
+//            db.open();
+//        } catch (SQLException e) {
+//            Log.e("DBReadAll error", "failed to open database");
+//            throw e;
+//        }
+//        myCursor = db.getChartNo(x);
+//        DBV.sTitle = myCursor.getString(1);
+//        DBV.Sstart = myCursor.getString(2);
+//        DBV.sEnd = myCursor.getString(3);
+//        DBV.sBgUrl = myCursor.getString(4);
+//        db.close();
+//    }
 
 	public void updateHomeView(){
 		try {
@@ -489,8 +518,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 				timeLeftText.setText(getHoursTLeft() + " " + getString(R.string.hoursLeft));
 			}
 			titleBot.setText(DBV.sTitle);
-		
-			
 		} catch (Exception e) {
 			Log.d("Update Home View", "update home View failed");
 			e.printStackTrace();
@@ -543,11 +570,11 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			super.destroyItem(container,position,object);
 
 		}
-		@Override
-		public Object instantiateItem (ViewGroup container, int position) {
-			Log.d("create", "requestPage create at postition--"+position);
-			return super.instantiateItem(container,position);
-		}
+//		@Override
+//		public Object instantiateItem (ViewGroup container, int position) {
+//			Log.d("create", "requestPage create at postition--"+position);
+//			return super.instantiateItem(container,position);
+//		}
 		@Override
 		public CharSequence getPageTitle(int position){
 			Locale l = Locale.getDefault();

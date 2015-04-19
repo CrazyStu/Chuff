@@ -6,9 +6,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -43,7 +40,7 @@ import static com.totirrapp.cc.SetCounter.updateCounter;
 
 public class DetailsActivity extends Activity {
     public static Context context;
-    private myDatabaseAdapter		db					= null;
+    private databaseAdapter db					= null;
     private boolean					running				= true;
     private detailsThread			MT;
 	public DetailsActivity() {
@@ -51,7 +48,7 @@ public class DetailsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         context = this.getBaseContext();
-        db = new myDatabaseAdapter(context);
+        db = new databaseAdapter(context);
         DBReadAll();
         Log.i("DBV1", DBV.sTitle);
         Log.i("DBV2", DBV.Sstart);

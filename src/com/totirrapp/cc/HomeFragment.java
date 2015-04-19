@@ -55,9 +55,9 @@ public class HomeFragment extends Fragment{
         }
     }
     public interface clickCallback {
-        public void onShortPress(int v);
-        public void onLongPress(int v);
-        public void initiateBG();
+        void onShortPress(int v);
+        void onLongPress(int v);
+        void initiateBG();
     }
     public void setupListeners(){
         shortPress= new View.OnClickListener() {
@@ -101,8 +101,6 @@ public class HomeFragment extends Fragment{
         chartBackground = this.rootView.findViewById(id.frag_home_parent_view);
         chartBackground.setOnClickListener(shortPress);
         chartBackground.setOnLongClickListener(longPress);
-
-
     }
 
 }
