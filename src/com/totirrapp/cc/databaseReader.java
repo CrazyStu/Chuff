@@ -9,23 +9,23 @@ import java.util.ArrayList;
 
 public class databaseReader {
     public static Context context;
-    private databaseAdapter db = null;
+    private static databaseAdapter db = null;
 
-    public databaseReader(){
+    public databaseReader(String x){
         context = MainActivity.context;
         db = new databaseAdapter(context);
-        try {
-            db.open();
-            Log.e("DB open test", "opened database");
-            db.close();
-        } catch (SQLException e) {
-            Log.e("DB open error", "failed to open database");
-        }
+//        try {
+//            db.open(x);
+//            Log.e("DB open test", "opened database");
+//            db.close();
+//        } catch (SQLException e) {
+//            Log.e("DB open error", "failed to open database");
+//        }
     }
-    public ArrayList getChartInfo(int x){
+    public static ArrayList getChartInfo(int x, String y){
         Cursor myCursor;
         try {
-            db.open();
+            db.open(y);
         } catch (SQLException e) {
             Log.e("DBReadAll error", "failed to open database");
             throw e;
@@ -41,10 +41,10 @@ public class databaseReader {
         db.close();
         return values;
     }
-    public void getChartCount(){
+    public static void getChartCount(String x){
         Cursor myCursor;
         try {
-            db.open();
+            db.open(x);
             myCursor = db.chartCount();
             DBV.chartCount = myCursor.getCount();
             db.close();
@@ -54,5 +54,10 @@ public class databaseReader {
             throw e;
         }
     }
-
+    public static String getChartName(int x){
+        db.open("get chart Name");
+        String temp = db.getChartName(x);
+        db.close();
+        return temp;
+    }
 }

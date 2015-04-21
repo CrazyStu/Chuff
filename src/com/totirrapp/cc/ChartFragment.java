@@ -9,21 +9,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import static com.totirrapp.cc.R.*;
+import static com.totirrapp.cc.R.id.timeDoneTextView;
+import static com.totirrapp.cc.SetCounter.getDaysTDone;
+import static com.totirrapp.cc.SetCounter.getDaysTLeft;
+import static com.totirrapp.cc.SetCounter.getHoursTDone;
+import static com.totirrapp.cc.SetCounter.getHoursTLeft;
 
 
-public class HomeFragment extends Fragment{
+public class ChartFragment extends Fragment{
 	public View rootView;
     private clickCallback call;
     private View.OnClickListener shortPress;
     private View.OnLongClickListener longPress;
+    private TextView				percent				= null;
+    private TextView				timeDoneText		= null;
+    private TextView				timeLeftText		= null;
+    private TextView				titleBot			= null;
+    private int chartNo = 99;
+    private ArrayList<String> values;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
         try {
             call = (clickCallback) activity;
 
@@ -34,13 +46,18 @@ public class HomeFragment extends Fragment{
         }
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		rootView = inflater.inflate(layout.frag_home,container, false);
+		rootView = inflater.inflate(layout.frag_home, container, false);
+//        chartNo = getArguments().getInt("ChartNo", 0);
         setupListeners();
         setupButtons();
         call.initiateBG();
 		return rootView;
 	}
-     public void setNewBackground(BitmapDrawable bmp){
+    public void getArgs(){
+        chartNo = getArguments().getInt("ChartNo");
+        values = getArguments().getStringArrayList("values");
+    }
+    public void setNewBackground(BitmapDrawable bmp){
          try{
              rootView.setBackground(bmp);
          }catch(Exception e){
@@ -102,5 +119,29 @@ public class HomeFragment extends Fragment{
         chartBackground.setOnClickListener(shortPress);
         chartBackground.setOnLongClickListener(longPress);
     }
-
+    public void updateHomeView(){
+        try {
+            if(percent == null){
+                percent = (TextView) rootView.findViewById(R.id.percDoneText);
+                timeDoneText = (TextView) rootView.findViewById(timeDoneTextView);
+                timeLeftText = (TextView) rootView.findViewById(R.id.timeLeftTextView);
+                titleBot = (TextView) rootView.findViewById(R.id.titleBot);
+            }
+            percent.setText(DBV.percentDone + "%");
+            if(getDaysTDone()>0){
+                timeDoneText.setText(getDaysTDone() + " " + getString(R.string.daysDone));
+            }else{
+                timeDoneText.setText(getHoursTDone() + " " + getString(R.string.hoursDone));
+            }
+            if(getDaysTLeft()>0){
+                timeLeftText.setText(getDaysTLeft() + " " + getString(R.string.daysLeft));
+            }else{
+                timeLeftText.setText(getHoursTLeft() + " " + getString(R.string.hoursLeft));
+            }
+            titleBot.setText(values.get(2));
+        } catch (Exception e) {
+            Log.d("Update Home View", "update home View failed");
+            e.printStackTrace();
+        }
+    }
 }

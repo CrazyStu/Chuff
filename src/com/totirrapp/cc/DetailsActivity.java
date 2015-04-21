@@ -78,7 +78,7 @@ public class DetailsActivity extends Activity {
     public void DBReadAll(){
         Cursor myCursor;
         try {
-            db.open();
+            db.open("DBReadAll");
         } catch (SQLException e) {
             Log.e("DBReadAll error", "failed to open database");
             throw e;

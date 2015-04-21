@@ -78,7 +78,7 @@ public class databaseAdapter {
             Log.i("Database", "Chart Table Created - Table is currently blank");
         }
         public void onOpen(SQLiteDatabase database){
-            Log.i("Database", ">>>>DB OPEN<<<<");
+//            Log.i("Database", ">>>>DB OPEN<<<<");
         }
 
 
@@ -90,7 +90,8 @@ public class databaseAdapter {
             Log.i("Database transfer", "Old data inserted correctly!!");
         }
     }
-    public databaseAdapter open() throws SQLException{
+    public databaseAdapter open(String x) throws SQLException{
+        Log.d("Database",">>>>Open() called by "+x);
         db = myDatabaseHelper.getWritableDatabase();
         return this;
     }
@@ -99,7 +100,6 @@ public class databaseAdapter {
         Log.i("Database", ">>>>DB Closed<<<<");
     }
 //    Update database information
-
     public void newChart(String v1, String v2, String v3, String v4, String v5, String v6){
         ContentValues newChartValues = new ContentValues();
         newChartValues.put(CHART_NAME, v1);

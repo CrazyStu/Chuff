@@ -24,15 +24,14 @@ public class chart {
 	private int hoursLeft =10;
 	private int hoursDone = 10;
 	private int percentDone = 50;
-	private databaseReader dbr = null;
 
 	public chart(int x){
 		chartNo = x;
-		dbr = new databaseReader();
 		readChart();
 	}
 	public void readChart(){
-		values = dbr.getChartInfo(chartNo);
+		String y = "Chart"+chartNo+">ReadChart()";
+		values = databaseReader.getChartInfo(chartNo,y);
 		chartName = values.get(0);
 		chartHeader = values.get(1);
 		chartTitle = values.get(2);

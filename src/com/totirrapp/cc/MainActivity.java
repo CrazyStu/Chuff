@@ -44,14 +44,14 @@ import static com.totirrapp.cc.SetCounter.getDaysTLeft;
 import static com.totirrapp.cc.SetCounter.getHoursTDone;
 import static com.totirrapp.cc.SetCounter.getHoursTLeft;
 
-public class MainActivity extends FragmentActivity implements HomeFragment.clickCallback, NewFragment.newChartCallback{
+public class MainActivity extends FragmentActivity implements ChartFragment.clickCallback, NewFragment.newChartCallback{
         public static Context			context;
 	private databaseAdapter db					= null;
 	private databaseReader dbr					= null;
 	private static int				RESULT_LOAD_IMAGE	= 1;
 	private SectionsPagerAdapter	mSectionsPagerAdapter;
 	private ViewPager				mViewPager;
-	private HomeFragment			homeFrag;
+	private ChartFragment 			chartFrag;
 	private HelpFragment            helpFrag;
     private NewFragment             newFrag;
 	private String					noImage				= "Android Wallpaper";
@@ -70,12 +70,9 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		super.onCreate(savedInstanceState);
 		context = this.getBaseContext();
 		db = new databaseAdapter(context);
-		dbr = new databaseReader();
+		dbr = new databaseReader("Activity Create");
 		initCharts();
 
-		chart chart1 = new chart(1);
-		chartList.add(chart1);
-//		processDB();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
@@ -102,7 +99,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		}
 	}
 	public void initCharts(){
-		dbr.getChartCount();
+		databaseReader.getChartCount("initCharts()");
 		if(DBV.chartCount>0) {
 			int x = 0;
 			chart tempChart;
@@ -122,18 +119,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		DBV.sEnd = tempList.get(4);
 		DBV.sBgUrl = tempList.get(5);
 	}
-//	public void processDB(){
-//		dbChartCount();
-//		if(DBV.chartCount>0) {
-//			DBReadChart(1);
-//			Log.i("DBV1", DBV.sTitle);
-//			Log.i("DBV2", DBV.Sstart);
-//			Log.i("DBV3", DBV.sEnd);
-//			Log.i("DBV4", DBV.sBgUrl);
-//		}else{
-//			Log.e("No Charts Found","HELP!>!!??!");
-//		}
-//	}
 	public void onShortPress(int v){
       if (v == R.id.frag_home_parent_view) {
             Intent intent = new Intent(this, DetailsActivity.class);
@@ -175,7 +160,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 				String t5 = "11/12/2015";
 				String t6 = "No Image";
 				try {
-					db.open();
+					db.open("new Chart");
 					db.newChart(t1, t2, t3, t4, t5, t6);
 					db.close();
 					removePage(x);
@@ -294,10 +279,10 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             public void onClick(View view) {
                 setBG.dismiss();
                 DBV.sBgUrl = noImage;
-                db.open();
+                db.open("wallpaper set");
                 db.updatePic(1, DBV.sBgUrl);
                 db.close();
-                homeFrag.removeBackground();
+                chartFrag.removeBackground();
             }
         });
 		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
@@ -310,12 +295,13 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
         Button deleteButton = (Button) setBG.findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
-				String num = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
-				setBG.dismiss();
-				db.open();
-                db.deleteRecord(num);
-				db.close();
+				String title = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
 				int x = mViewPager.getCurrentItem();
+				setBG.dismiss();
+				db.open("delete chart");
+                db.deleteRecord(title);
+				db.close();
+
 				removePage(x);
 			}
         });
@@ -337,7 +323,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			cursor.close();
 			Log.i("pic", picturePath);
 
-			db.open();
+			db.open("set bgurl");
 			db.updatePic(1, picturePath);
 			db.close();
 			DBV.sBgUrl = picturePath;
@@ -354,12 +340,11 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		if (bgURL.toString() == noImage) {
 			mViewPager.setBackgroundResource(0);
 		} else {
-			Log.i("BgHandler", "Find image: " + bgURL);
 			BitmapFactory.Options bgOptions = new BitmapFactory.Options();
+			Bitmap test;
 			bgOptions.inJustDecodeBounds = true;
 			try {
-				@SuppressWarnings("unused")
-				Bitmap test = BitmapFactory.decodeFile(bgURL, bgOptions);
+				 test = BitmapFactory.decodeFile(bgURL, bgOptions);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -368,10 +353,9 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 				loadSelectedImage(bgURL, screenW, screenH);
 			} else {
 				Log.i("BgHandler", "Image not found---Loading default backgorund");
-                homeFrag.removeBackground();
+                chartFrag.removeBackground();
 			}
 		}
-
 		return bg1;
 	}
 	private Bitmap loadSelectedImage(String bgURL,int screenW,int screenH){
@@ -387,10 +371,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		if (ImageAspect < 1) {
 			landscape = true;
 		}
-		Log.i("BgHandler", "Origional Width= " + bgOptions.outWidth);
-		Log.i("BgHandler", "Origional Height= " + bgOptions.outHeight);
-		Log.i("BgHandler", "Landscape= " + landscape);
-
+		Log.i("Image","W="+bgOptions.outWidth+"H= " + bgOptions.outHeight+"Landscape=" + landscape);
 		int iscale;
 		if (landscape) {
 			ImageAspect = (float) bgOptions.outWidth / (float) bgOptions.outHeight;
@@ -411,9 +392,9 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 				bgOptions.inSampleSize = iscale;
 			}
 		}
-		Log.i("BgHandler", "Sample Size= " + iscale);
-		Log.i("BgHandler", "Image aspect ratio= " + ImageAspect);
-		Log.i("BgHandler", "Screen aspect ratio= " + ScreenAspect);
+		Log.i("Image","SampleSize="+iscale);
+//		Log.i("BgHandler", "Image aspect ratio= " + ImageAspect);
+//		Log.i("BgHandler", "Screen aspect ratio= " + ScreenAspect);
 
 		// =============Read rotation==============================
 		ExifInterface exif = null;
@@ -423,18 +404,15 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			e.printStackTrace();
 		}
 		int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-		Log.i("oriented", orientation + "");
 		// =============Get full image and resize=====================
 		bgOptions.inJustDecodeBounds = false;
 		bg1 = BitmapFactory.decodeFile(bgURL, bgOptions);
-
-		Log.i("BgHandler", "New Width= " + bg1.getWidth());
-		Log.i("BgHandler", "New Height= " + bg1.getHeight());
+		Log.i("Image", "Width="+bg1.getWidth()+"Height= " + bg1.getHeight());
 		if (landscape) {
 			bg1 = Bitmap.createScaledBitmap(bg1, (int) (screenH * ImageAspect), screenH, true);
 		} else {
 			bg1 = Bitmap.createScaledBitmap(bg1, screenW, (int) (screenW * ImageAspect), true);
-			Log.i("BgHandler", "Size=" + screenW + " x " + (int) (screenW * ImageAspect));
+//			Log.i("BgHandler", "Size=" + screenW + " x " + (int) (screenW * ImageAspect));
 		}
 		// ==============rotate as required============================
 		int degrees = 0;
@@ -448,13 +426,12 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		Matrix matrix = new Matrix();
 		matrix.postRotate(degrees);
 		bg1 = Bitmap.createBitmap(bg1, 0, 0, bg1.getWidth(), bg1.getHeight(), matrix, true);
-
 		return bg1;
 	}
 	// ### Update Database value
 	public void DBUpdate(String item,String data){
 		try {
-			db.open();
+			db.open("DBUpdate()");
 		} catch (SQLException sqle) {
 			throw sqle;
 		}
@@ -469,59 +446,15 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 		}
 		db.close();
 	}
-    public void dbChartCount(){
-        Cursor myCursor;
-        try {
-            db.open();
-            myCursor = db.chartCount();
-            DBV.chartCount = myCursor.getCount();
-            db.close();
-            Log.e("#-- Chart Count--# ", DBV.chartCount+" charts found");
-        } catch (SQLException e) {
-            Log.e("DBReadAll error", "failed to count database");
-            throw e;
-        }
-    }
-//    public void DBReadChart(int x){
-//        Cursor myCursor;
-//        try {
-//            db.open();
-//        } catch (SQLException e) {
-//            Log.e("DBReadAll error", "failed to open database");
-//            throw e;
-//        }
-//        myCursor = db.getChartNo(x);
-//        DBV.sTitle = myCursor.getString(1);
-//        DBV.Sstart = myCursor.getString(2);
-//        DBV.sEnd = myCursor.getString(3);
-//        DBV.sBgUrl = myCursor.getString(4);
-//        db.close();
-//    }
-
 	public void updateHomeView(){
-		try {
-			if(percent == null){
-				percent = (TextView) findViewById(R.id.percDoneText);
-				timeDoneText = (TextView) findViewById(timeDoneTextView);
-				timeLeftText = (TextView) findViewById(R.id.timeLeftTextView);
-				titleBot = (TextView) findViewById(R.id.titleBot);
-			}
-			percent.setText(DBV.percentDone + "%");
-			if(getDaysTDone()>0){
-				timeDoneText.setText(getDaysTDone() + " " + getString(R.string.daysDone));
-			}else{
-				timeDoneText.setText(getHoursTDone() + " " + getString(R.string.hoursDone));
-			}
-			if(getDaysTLeft()>0){
-				timeLeftText.setText(getDaysTLeft() + " " + getString(R.string.daysLeft));
-			}else{
-				timeLeftText.setText(getHoursTLeft() + " " + getString(R.string.hoursLeft));
-			}
-			titleBot.setText(DBV.sTitle);
-		} catch (Exception e) {
-			Log.d("Update Home View", "update home View failed");
-			e.printStackTrace();
-		}
+		long itemId;
+		String name;
+		ChartFragment myFragment;
+		itemId = mViewPager.getCurrentItem();
+		name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
+		myFragment= (ChartFragment) fm.findFragmentByTag(name);
+		Log.e(">>Update<<", "Current Frag ID=" + itemId + ", Frag=" + myFragment);
+		myFragment.updateHomeView();
 	}
 	public void removePage(int x){
 		recreate();
@@ -551,12 +484,17 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
                 return helpFrag;
             }else if(position == DBV.chartCount+1) {
                 newFrag = new NewFragment();
-				Log.i("Get Item","num="+position+" NewFrag");
+				Log.i("Get Item", "num=" + position + " NewFrag");
                 return newFrag;
             } else {
-                homeFrag = new HomeFragment();
-				Log.i("Get Item","num="+position+" HomeFrag");
-                return homeFrag;
+                chartFrag = new ChartFragment();
+				Log.i("Get Item","num="+position+" ChartFrag");
+				Bundle args = new Bundle();
+				args.putInt("ChartNo", position);
+				args.putStringArrayList("values",chartList.get(position-1).getValues());
+				chartFrag.setArguments(args);
+				chartFrag.getArgs();
+                return chartFrag;
             }
 		}
 		@Override
@@ -570,11 +508,6 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 			super.destroyItem(container,position,object);
 
 		}
-//		@Override
-//		public Object instantiateItem (ViewGroup container, int position) {
-//			Log.d("create", "requestPage create at postition--"+position);
-//			return super.instantiateItem(container,position);
-//		}
 		@Override
 		public CharSequence getPageTitle(int position){
 			Locale l = Locale.getDefault();
@@ -585,9 +518,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
             }else{
                 String name = "no name";
                 try {
-                    db.open();
-                    name = db.getChartName(position);
-                    db.close();
+                    name = databaseReader.getChartName(position);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -597,13 +528,23 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 	}
     private class detailsThread extends Thread {
         public void run(){
+			int itemId;
             Log.e("MT State", MT.getState() + "");
             while (running) {
-                try {
-                    SetCounter.updateCounter();
-                    runOnUiThread(new Runnable(){public void run() {updateHomeView();}});
-                    sleep(1000);
-                } catch (Exception e) {e.printStackTrace();}
+				itemId = mViewPager.getCurrentItem();
+				if(itemId>0&&itemId<DBV.chartCount+1) {
+					try {
+						SetCounter.updateCounter();
+						runOnUiThread(new Runnable() {
+							public void run() {
+								updateHomeView();
+							}
+						});
+						sleep(1000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
             }
             Log.e("MT State", MT.getState() +"stopped");
         }
@@ -616,7 +557,7 @@ public class MainActivity extends FragmentActivity implements HomeFragment.click
 
                 temp2.setGravity(Gravity.CENTER);
 
-                homeFrag.setNewBackground(temp2);
+                chartFrag.setNewBackground(temp2);
 
             } catch (Exception e) {
                 e.printStackTrace();
