@@ -54,10 +54,11 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private ChartFragment 			chartFrag;
 	private HelpFragment            helpFrag;
     private NewFragment             newFrag;
-	private String					noImage				= "Android Wallpaper";
+	private String					noImage				= "noImage";
 	private boolean					running				= true;
 	private detailsThread			MT;
 	private Bitmap					bg1;
+	private String 					tempTitle = null;
 	private TextView				percent				= null;
 	private TextView				timeDoneText		= null;
 	private TextView				timeLeftText		= null;
@@ -72,7 +73,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		db = new databaseAdapter(context);
 		dbr = new databaseReader("Activity Create");
 		initCharts();
-
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
@@ -136,9 +136,10 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
             myBGDialog();
         }
     }
-    public void initiateBG(){
+    public void initiateBG(int x){
+		Log.e("initBGcalled","called by chartFrag no>"+x);
         ImageThread testMe = new ImageThread();
-        testMe.run("initiateBG()");
+        testMe.run(x);
     }
     public void newChartRequest(int v){
 
@@ -164,7 +165,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 					db.newChart(t1, t2, t3, t4, t5, t6);
 					db.close();
 					removePage(x);
-				}catch (Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				newChartDialog.dismiss();
@@ -272,19 +273,20 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		final Dialog setBG = new Dialog(this);
 		setBG.setContentView(R.layout.dialog_background);
 		setBG.setTitle("Choose Background");
+		tempTitle = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
 
 		setBG.show();
 		Button wallpaperButton = (Button) setBG.findViewById(R.id.wallpaperButton);
 		wallpaperButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                setBG.dismiss();
-                DBV.sBgUrl = noImage;
-                db.open("wallpaper set");
-                db.updatePic(1, DBV.sBgUrl);
-                db.close();
-                chartFrag.removeBackground();
-            }
-        });
+			public void onClick(View view) {
+				setBG.dismiss();
+				DBV.sBgUrl = noImage;
+				db.open("wallpaper set");
+				db.updatePic(tempTitle, DBV.sBgUrl);
+				db.close();
+				chartFrag.removeBackground();
+			}
+		});
 		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
         galleryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
@@ -294,17 +296,15 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
         });
         Button deleteButton = (Button) setBG.findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view){
-				String title = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
+			public void onClick(View view) {
 				int x = mViewPager.getCurrentItem();
 				setBG.dismiss();
 				db.open("delete chart");
-                db.deleteRecord(title);
+				db.deleteRecord(tempTitle);
 				db.close();
-
 				removePage(x);
 			}
-        });
+		});
 	}
 	// ## Choose Picture / Update DB / Scale Image / Set Background
 	public void choosePic(){
@@ -324,7 +324,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			Log.i("pic", picturePath);
 
 			db.open("set bgurl");
-			db.updatePic(1, picturePath);
+			db.updatePic(tempTitle, picturePath);
 			db.close();
 			DBV.sBgUrl = picturePath;
 
@@ -333,24 +333,23 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		}
 
 	}
-	public Bitmap getBackground(int screenW,int screenH){
+	public Bitmap getBackground(String url, int screenW,int screenH){
 		// Context context = MainActivity.context;
 		Log.i("BgHandler", "Start Bitmap Processing");
-		String bgURL = DBV.sBgUrl;
-		if (bgURL.toString() == noImage) {
+		if (url == noImage) {
 			mViewPager.setBackgroundResource(0);
 		} else {
 			BitmapFactory.Options bgOptions = new BitmapFactory.Options();
 			Bitmap test;
 			bgOptions.inJustDecodeBounds = true;
 			try {
-				 test = BitmapFactory.decodeFile(bgURL, bgOptions);
+				 test = BitmapFactory.decodeFile(url, bgOptions);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 			if (bgOptions.outHeight > 0) {
 				Log.i("BgHandler", "Image found---Loading selected picture");
-				loadSelectedImage(bgURL, screenW, screenH);
+				loadSelectedImage(url, screenW, screenH);
 			} else {
 				Log.i("BgHandler", "Image not found---Loading default backgorund");
                 chartFrag.removeBackground();
@@ -437,8 +436,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		}
 		if (item == "title") {
 			db.updateTitle(1, data);
-		} else if (item == "background") {
-			db.updatePic(1, data);
 		} else if (item == "startDate") {
 			db.updateStartDate(1, DBV.Sstart);
 		} else if (item == "endDate") {
@@ -454,6 +451,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
 		myFragment= (ChartFragment) fm.findFragmentByTag(name);
 		Log.e(">>Update<<", "Current Frag ID=" + itemId + ", Frag=" + myFragment);
+		Log.e(">>Update<<", "Current Background="+chartList.get(mViewPager.getCurrentItem()-1).getChartBgUrl());
 		myFragment.updateHomeView();
 	}
 	public void removePage(int x){
@@ -550,19 +548,43 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
         }
     }
     private class ImageThread extends Thread {
-        public void run(String owner){
-            Log.e("imageThread","Thread started by "+owner);
+        public void run(int x){
+            Log.e("imageThread","Thread started by no"+x);
             try {
-                BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(DBV.sWidth, DBV.sHeight));
-
+//				tempTitle = (String)mSectionsPagerAdapter.getPageTitle(x+1);
+				String url = chartList.get(x-1).getChartBgUrl();
+                BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(url, DBV.sWidth, DBV.sHeight));
                 temp2.setGravity(Gravity.CENTER);
+				long itemId = (long) x;
+				String name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
+				ChartFragment myFragment=(ChartFragment) fm.findFragmentByTag(name);
+				if (myFragment != null) {
 
-                chartFrag.setNewBackground(temp2);
+					myFragment.setNewBackground(temp2);
+				} else {
+					Log.e("Fragment NOT Found", "??? #" + itemId + ": f=" + myFragment);
+				}
+
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
             Log.e("imageThread","Thread ended");
         }
+		public void run(String x){
+			Log.e("imageThread","Thread started by "+x);
+			try {
+				String url = chartList.get(mViewPager.getCurrentItem()-1).getChartBgUrl();
+				BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(url,DBV.sWidth, DBV.sHeight));
+				temp2.setGravity(Gravity.CENTER);
+				chartFrag.setNewBackground(temp2);
+
+
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Log.e("imageThread","Thread ended");
+		}
     }
 }

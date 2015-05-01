@@ -45,8 +45,7 @@ public class databaseReader {
         Cursor myCursor;
         try {
             db.open(x);
-            myCursor = db.chartCount();
-            DBV.chartCount = myCursor.getCount();
+            DBV.chartCount = db.chartCount();
             db.close();
             Log.e("#-- DBR Chart Count--# ", DBV.chartCount + " charts found");
         } catch (SQLException e) {

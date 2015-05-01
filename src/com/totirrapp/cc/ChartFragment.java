@@ -47,11 +47,15 @@ public class ChartFragment extends Fragment{
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		rootView = inflater.inflate(layout.frag_home, container, false);
-//        chartNo = getArguments().getInt("ChartNo", 0);
+        try {
+            chartNo = getArguments().getInt("ChartNo", 0);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         setupListeners();
         setupButtons();
-        call.initiateBG();
-		return rootView;
+        call.initiateBG(chartNo);
+        return rootView;
 	}
     public void getArgs(){
         chartNo = getArguments().getInt("ChartNo");
@@ -74,7 +78,7 @@ public class ChartFragment extends Fragment{
     public interface clickCallback {
         void onShortPress(int v);
         void onLongPress(int v);
-        void initiateBG();
+        void initiateBG(int x);
     }
     public void setupListeners(){
         shortPress= new View.OnClickListener() {

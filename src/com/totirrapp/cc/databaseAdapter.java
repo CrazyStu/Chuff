@@ -13,7 +13,6 @@ public class databaseAdapter {
     public static final String TAG ="DBAdapter";
     public static final String DATABASE_NAME = "settingsdata";
     public static final String CHARTS_TABLE = "Chart_Table";
-
     public static final String KEY_ROWID ="_id";
     public static final String CHART_NAME = "Chart_Name";
     public static final String KEY_TITLE1 = "Title1";
@@ -21,13 +20,8 @@ public class databaseAdapter {
     public static final String KEY_START_DATE = "Start_Date";
     public static final String KEY_END_DATE = "End_Date";
     public static final String KEY_PIC = "Picture_URL";
-
-
     public static final String SETTINGS_TABLE = "Settings_Table";
     public static final String SET_TABLE2 = "Table2";
-
-
-
     private static DatabaseHelper myDatabaseHelper;
     private static SQLiteDatabase db;
 
@@ -108,7 +102,7 @@ public class databaseAdapter {
         newChartValues.put(KEY_START_DATE, v4);
         newChartValues.put(KEY_END_DATE, v5);
         newChartValues.put(KEY_PIC, v6);
-        db.insert(CHARTS_TABLE,null, newChartValues);
+        db.insert(CHARTS_TABLE, null, newChartValues);
     }
     public boolean updateStartDate(long rowId, String newSdate){
         ContentValues args = new ContentValues();
@@ -120,11 +114,11 @@ public class databaseAdapter {
         args.put(KEY_END_DATE, newEdate);
         return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
     }
-    public boolean updatePic(long rowId, String url){
+    public boolean updatePic(String name, String url){
         Log.i("updatePic", url);
         ContentValues args = new ContentValues();
         args.put(KEY_PIC, url);
-        return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+        return db.update(CHARTS_TABLE, args, CHART_NAME+" = '"+name+"'",null)>0;
     }
     public boolean updateTitle(long rowId, String url){
         ContentValues args = new ContentValues();
@@ -155,9 +149,14 @@ public class databaseAdapter {
     }
     public Cursor getFullChartNo(int rowId)throws SQLException{
         Cursor myCursor;
-        myCursor = db.query(true, CHARTS_TABLE, new String[]{KEY_ROWID,CHART_NAME,KEY_TITLE1,KEY_TITLE2,KEY_START_DATE,KEY_END_DATE,KEY_PIC},KEY_ROWID+"="+rowId, null, null, null, null, null);
+        myCursor = db.query(true, CHARTS_TABLE, new String[]{KEY_ROWID,CHART_NAME,KEY_TITLE1,KEY_TITLE2,KEY_START_DATE,KEY_END_DATE,KEY_PIC},null, null, null, null, null, null);
         if(myCursor!=null){
             myCursor.moveToFirst();
+            int i=1;
+            while(i<rowId){
+                myCursor.moveToNext();
+                i++;
+            }
         }
         return myCursor;
     }
@@ -174,12 +173,17 @@ public class databaseAdapter {
         }
         return myCursor.getString(0);
     }
-    public Cursor chartCount()throws SQLException{
+    public Cursor getAllChartNames()throws SQLException{
+        Cursor myCursor;
+        myCursor = db.query(true, CHARTS_TABLE, new String[]{CHART_NAME},null, null, null, null, null, null);
+        return myCursor;
+    }
+    public int chartCount()throws SQLException{
         Cursor myCursor;
         myCursor = db.query(true, CHARTS_TABLE, new String[]{KEY_ROWID},null, null, null, null, null, null);
         if(myCursor!=null){
             myCursor.moveToFirst();
         }
-        return myCursor;
+        return myCursor.getCount();
     }
 }
