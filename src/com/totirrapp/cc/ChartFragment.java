@@ -70,6 +70,7 @@ public class ChartFragment extends Fragment{
      }
     public void removeBackground(){
         try{
+            rootView.setBackground(null);
             rootView.setBackgroundColor(Color.TRANSPARENT);
         }catch(Exception e){
             e.printStackTrace();

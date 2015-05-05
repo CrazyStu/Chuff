@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SetBackgroundDialog"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -10,7 +11,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="0dp"
-    android:theme="@android:style/Theme.Dialog" >
+    android:theme="@android:style/Theme.Holo.Dialog"
+    tools:context=".MainActivity">
 
     <Button
         android:id="@+id/wallpaperButton"

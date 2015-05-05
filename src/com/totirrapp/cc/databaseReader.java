@@ -59,4 +59,14 @@ public class databaseReader {
         db.close();
         return temp;
     }
+    public static void updateBGURL(String chart,String url){
+        db.open("set bgurl");
+        db.updatePic(chart, url);
+        db.close();
+    }
+    public static void deleteChart(String chart){
+        db.open("delete chart");
+        db.deleteRecord(chart);
+        db.close();
+    }
 }
