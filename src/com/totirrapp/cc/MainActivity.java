@@ -30,7 +30,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -45,20 +44,13 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private static int				RESULT_LOAD_IMAGE	= 1;
 	private SectionsPagerAdapter	mSectionsPagerAdapter;
 	private ViewPager				mViewPager;
-	private ChartFragment 			chartFrag;
-	private HelpFragment            helpFrag;
-    private NewFragment             newFrag;
 	private String					noImage				= "noImage";
 	private boolean					running				= true;
 	private detailsThread			MT;
 	private Bitmap					bg1;
 	private String 					tempTitle = null;
-	private TextView				percent				= null;
-	private TextView				timeDoneText		= null;
-	private TextView				timeLeftText		= null;
-	private TextView				titleBot			= null;
-	private FragmentManager fm = this.getSupportFragmentManager();
-	private ArrayList<chart> chartList = new ArrayList<chart>();
+	private FragmentManager 		fm = this.getSupportFragmentManager();
+	private ArrayList<ChartFragment> chartFragList = new ArrayList<ChartFragment>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -96,22 +88,17 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		databaseReader.getChartCount("initCharts()");
 		if(DBV.chartCount>0) {
 			int x = 0;
-			chart tempChart;
+			ChartFragment chartFrag;
 			while (x < DBV.chartCount) {
+				chartFrag = new ChartFragment();
+				chartFragList.add(x, chartFrag);
+				Bundle args = new Bundle();
+				args.putInt("ChartNo", x+1);
+				chartFrag.setArguments(args);
+				chartFrag.getArgs();
 				x++;
-				tempChart = new chart(x);
-				chartList.add(tempChart);
 			}
-			getChartValues(1);
 		}
-	}
-	public void getChartValues(int x){
-		ArrayList<String> tempList = chartList.get(x-1).getValues();
-		DBV.sName = tempList.get(0);
-		DBV.sTitle = tempList.get(2);
-		DBV.Sstart = tempList.get(3);
-		DBV.sEnd = tempList.get(4);
-		DBV.sBgUrl = tempList.get(5);
 	}
 	public void onShortPress(int v){
       if (v == R.id.frag_home_parent_view) {
@@ -136,7 +123,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
         testMe.run(x);
     }
     public void newChartRequest(int v){
-
 		final Dialog newChartDialog = new Dialog(this);
 		newChartDialog.setContentView(R.layout.dialog_title);
 		newChartDialog.setTitle("Chart Name");
@@ -172,7 +158,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		setDate.show();
 
 		String[] DateInts;
-		OnClickListener test = null;
+		OnClickListener test;
 		final DatePicker picker1 = (DatePicker) setDate.findViewById(R.id.datePicker1);
 		if (start) {
 			setDate.setTitle("Set Start Date");
@@ -192,7 +178,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 					Calendar calEnd = Calendar.getInstance(home);
 					calStart.set(Syear,Smonth,Sday,0,0,0);
 					calEnd.set(Eyear,Emonth,Eday,0,0,0);
-					
 					if(calStart.getTimeInMillis()>calEnd.getTimeInMillis()){
 						DBV.sEnd = Sday + "/" + (Smonth+1) + "/" + Syear;
 						DBUpdate("endDate", DBV.sEnd);
@@ -266,7 +251,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private void myBGDialog(){
 		final Dialog setBG = new Dialog(this);
 		setBG.setContentView(R.layout.dialog_background);
-		tempTitle = chartList.get(mViewPager.getCurrentItem()-1).getChartName();
+		tempTitle = chartFragList.get(mViewPager.getCurrentItem()-1).getChartName();
 		Log.e("tempTitle", "title is " + tempTitle);
 		setBG.setTitle("Set background for " + tempTitle);
 //		tempTitle = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
@@ -278,7 +263,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				setBG.dismiss();
 				DBV.sBgUrl = noImage;
 				databaseReader.updateBGURL(tempTitle, noImage);
-				chartList.get(mViewPager.getCurrentItem()-1).readChart();
+				chartFragList.get(mViewPager.getCurrentItem()-1).readChartValues();
 				useWallpaper(mViewPager.getCurrentItem());
 			}
 		});
@@ -315,7 +300,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			String picturePath = cursor.getString(columnIndex);
 			cursor.close();
 			databaseReader.updateBGURL(tempTitle,picturePath);
-			chartList.get(mViewPager.getCurrentItem()-1).readChart();
+			chartFragList.get(mViewPager.getCurrentItem()-1).readChartValues();
 			DBV.sBgUrl = picturePath;
             ImageThread testMe = new ImageThread();
             testMe.run("onActivityResult");
@@ -437,7 +422,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		}
 		if (item == "title") {
 			db.updateTitle(1, data);
-		} else if (item == "startDate") {
+		} else if (item.equals("startDate")) {
 			db.updateStartDate(1, DBV.Sstart);
 		} else if (item == "endDate") {
 			db.updateEndDate(1, DBV.sEnd);
@@ -452,7 +437,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
 		myFragment= (ChartFragment) fm.findFragmentByTag(name);
 		Log.e(">>Update<<", "Current Frag ID=" + itemId + ", Frag=" + myFragment);
-		Log.e(">>Update<<", "Current Background="+chartList.get(mViewPager.getCurrentItem()-1).getChartBgUrl());
+		Log.e(">>Update<<", "Current Background="+chartFragList.get(mViewPager.getCurrentItem()-1).getChartBgUrl());
 		try{
 			myFragment.updateHomeView();
 		}catch (Exception e){
@@ -470,7 +455,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			ft.remove(myFragment);
 			ft.commit();
 		} else {
-			Log.e("Fragment NOT Found", "??? #" + itemId + ": f=" + myFragment);
+			Log.e("Fragment NOT Found", "??? #" + itemId);
 		}
 		mViewPager.getAdapter().notifyDataSetChanged();
 	}
@@ -481,22 +466,15 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		@Override
 		public Fragment getItem(int position){
 			if (position == 0) {
-                helpFrag = new HelpFragment();
+                HelpFragment helpFrag = new HelpFragment();
 				Log.i("Get Item","num="+position+" HelpFrag");
                 return helpFrag;
             }else if(position == DBV.chartCount+1) {
-                newFrag = new NewFragment();
+                NewFragment newFrag = new NewFragment();
 				Log.i("Get Item", "num=" + position + " NewFrag");
                 return newFrag;
             } else {
-                chartFrag = new ChartFragment();
-				Log.i("Get Item","num="+position+" ChartFrag");
-				Bundle args = new Bundle();
-				args.putInt("ChartNo", position);
-				args.putStringArrayList("values",chartList.get(position-1).getValues());
-				chartFrag.setArguments(args);
-				chartFrag.getArgs();
-                return chartFrag;
+                return chartFragList.get(position-1);
             }
 		}
 		@Override
@@ -520,8 +498,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
             }else{
                 String name = "no name";
                 try {
-					name =  chartList.get(position-1).getChartName();
-//                    name = databaseReader.getChartName(position);
+					name =  chartFragList.get(position-1).getChartName();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -556,9 +533,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
         public void run(int x){
             Log.e("ImageThread","Thread1 started by no"+x);
             try {
-				tempTitle = chartList.get(x-1).getChartName();
-//				tempTitle = (String)mSectionsPagerAdapter.getPageTitle(x+1);
-				String url = chartList.get(x-1).getChartBgUrl();
+				tempTitle = chartFragList.get(x-1).getChartName();
+				String url = chartFragList.get(x-1).getChartBgUrl();
                 BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(url,x, DBV.sWidth, DBV.sHeight));
                 temp2.setGravity(Gravity.CENTER);
 				long itemId = (long) x;
@@ -568,7 +544,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 
 					myFragment.setNewBackground(temp2);
 				} else {
-					Log.e("Fragment NOT Found", "??? #" + itemId + ": f=" + myFragment);
+					Log.e("Fragment NOT Found", "??? #" + itemId);
 				}
             } catch (Exception e) {
                 e.printStackTrace();
@@ -579,8 +555,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			Log.e("ImageThread","Thread2 started by "+x);
 			try {
 				int chartNo =mViewPager.getCurrentItem()-1;
-				tempTitle = chartList.get(chartNo).getChartName();
-				String url = chartList.get(chartNo).getChartBgUrl();
+				tempTitle = chartFragList.get(chartNo).getChartName();
+				String url = chartFragList.get(chartNo).getChartBgUrl();
 				BitmapDrawable temp2 = new BitmapDrawable(context.getResources(), getBackground(url,chartNo+1,DBV.sWidth, DBV.sHeight));
 				temp2.setGravity(Gravity.CENTER);
 				long itemId = (long) mViewPager.getCurrentItem();

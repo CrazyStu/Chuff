@@ -13,8 +13,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import static com.totirrapp.cc.R.*;
+import static com.totirrapp.cc.R.id;
 import static com.totirrapp.cc.R.id.timeDoneTextView;
+import static com.totirrapp.cc.R.layout;
 import static com.totirrapp.cc.SetCounter.getDaysTDone;
 import static com.totirrapp.cc.SetCounter.getDaysTLeft;
 import static com.totirrapp.cc.SetCounter.getHoursTDone;
@@ -30,6 +31,13 @@ public class ChartFragment extends Fragment{
     private TextView				timeDoneText		= null;
     private TextView				timeLeftText		= null;
     private TextView				titleBot			= null;
+    private String chartName = "Chart Name Test";
+    private String chartHeader = "I Can't Wait...";
+    private String chartTitle = "StaticTitle";
+    private String chartStart = "02/02/2002";
+    private String chartEnd = "02/02/2020";
+    private String chartBgUrl = "StaticURL";
+    private FragmentCounter counter;
     private int chartNo = 99;
     private ArrayList<String> values;
 
@@ -59,7 +67,17 @@ public class ChartFragment extends Fragment{
 	}
     public void getArgs(){
         chartNo = getArguments().getInt("ChartNo");
-        values = getArguments().getStringArrayList("values");
+        readChartValues();
+    }
+    public void readChartValues(){
+        String y = "Chart"+chartNo+">ReadChart()";
+        values = databaseReader.getChartInfo(chartNo,y);
+        chartName = values.get(0);
+        chartHeader = values.get(1);
+        chartTitle = values.get(2);
+        chartStart = values.get(3);
+        chartEnd = values.get(4);
+        chartBgUrl = values.get(5);
     }
     public void setNewBackground(BitmapDrawable bmp){
          try{
@@ -148,5 +166,23 @@ public class ChartFragment extends Fragment{
             Log.d("Update Home View", "update home View failed");
             e.printStackTrace();
         }
+    }
+    public String getChartName(){
+        return chartName;
+    }
+    public String getChartHeader(){
+        return chartHeader;
+    }
+    public String getChartTitle(){
+        return chartTitle;
+    }
+    public String getChartStart(){
+        return chartStart;
+    }
+    public String getChartEnd(){
+        return chartEnd;
+    }
+    public String getChartBgUrl(){
+        return chartBgUrl;
     }
 }

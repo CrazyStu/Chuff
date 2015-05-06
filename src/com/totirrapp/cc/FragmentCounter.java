@@ -6,49 +6,49 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class SetCounter {
-		private static Locale home = new Locale("en");
-		private static Calendar calCurrent = Calendar.getInstance(home);
-		private static Calendar calStart = Calendar.getInstance(home);
-		private static Calendar calTarget = Calendar.getInstance(home);
-		private static Calendar compLeft = Calendar.getInstance(home);
-		private static Calendar compDone = Calendar.getInstance(home);
-		private static long compareLeft;
-		private static long compareDone;
-		private static int percent1;
-		private static int percent2;
-		private static int Syear = 2013;
-		private static int Smonth=02;
-		private static int Sday=25;
-		private static int Eyear= 2013;
-		private static int Emonth= 7;
-		private static int Eday= 3;
-		private static int monthsTLeft;
-		private static int monthsTDone;
-		private static int weeksTLeft;
-		private static int weeksTDone;
-		private static int daysTLeft;
-		private static long daysTDone;
-		private static long hoursTLeft;
-		private static long hoursTDone;
-		private static long minsTLeft;
-		private static long minsTDone;
-		private static long secsTLeft;
-		private static long secsTDone;
-		private static int monthsLeft;
-		private static int monthsDone;
-		private static int weeksLeft;
-		private static int weeksDone;
-		private static int daysLeft;
-		private static int daysDone;
-		private static int hoursLeft;
-		private static int hoursDone;
-		private static int minsLeft;
-		private static int minsDone;
-		private static int secsLeft;
-		private static int secsDone;
+public class FragmentCounter {
+		private Locale home = new Locale("en");
+		private Calendar calCurrent = Calendar.getInstance(home);
+		private Calendar calStart = Calendar.getInstance(home);
+		private Calendar calTarget = Calendar.getInstance(home);
+		private Calendar compLeft = Calendar.getInstance(home);
+		private Calendar compDone = Calendar.getInstance(home);
+		private long compareLeft;
+		private long compareDone;
+		private int percent1;
+		private int percent2;
+		private int Syear = 2013;
+		private int Smonth=02;
+		private int Sday=25;
+		private int Eyear= 2013;
+		private int Emonth= 7;
+		private int Eday= 3;
+		private int monthsTLeft;
+		private int monthsTDone;
+		private int weeksTLeft;
+		private int weeksTDone;
+		private int daysTLeft;
+		private long daysTDone;
+		private long hoursTLeft;
+		private long hoursTDone;
+		private long minsTLeft;
+		private long minsTDone;
+		private long secsTLeft;
+		private long secsTDone;
+		private int monthsLeft;
+		private int monthsDone;
+		private int weeksLeft;
+		private int weeksDone;
+		private int daysLeft;
+		private int daysDone;
+		private int hoursLeft;
+		private int hoursDone;
+		private int minsLeft;
+		private int minsDone;
+		private int secsLeft;
+		private int secsDone;
 
-		public static void updateCounterAndDates() {
+		public void updateCounterAndDates() {
 			Log.i("SetCounter", "Update Counter Dates");
 			String[] StartDate= DBV.Sstart.split("/");
 			Sday = Integer.parseInt(StartDate[0]);
@@ -61,7 +61,7 @@ public class SetCounter {
 			Eyear = Integer.parseInt(EndDate[2]);
 			updateCounter();
 		}
-		public static void updateCounter() {
+		public void updateCounter() {
 			Log.i("SetCounter", "Update Counter");
 			calCurrent.setTime(new Date());
 			calTarget.set(Eyear,Emonth,Eday,0,0,0);
@@ -121,90 +121,90 @@ public class SetCounter {
 			secsLeft=(int) ((compareLeft/1000)-(minsTLeft*60));
 		
 		}
-		public static int getPercentRemaining(){
+		public int getPercentRemaining(){
 			return percent1;
 		}
-		public static int getPercentCompleted(){
+		public int getPercentCompleted(){
 			return percent2;
 		}
-		public static String getStartDate(){
+		public String getStartDate(){
 			String x = Sday+"/"+(1+Smonth)+"/"+Syear;
 			return x;
 		}
-		public static String getEndDate(){
+		public String getEndDate(){
 			String x = Eday+"/"+(1+Emonth)+"/"+Eyear;
 			return x;
 		}
-		public static int getDaysTLeft(){
+		public int getDaysTLeft(){
 			return daysTLeft;
 		}
-		public static int getDaysTDone(){
+		public int getDaysTDone(){
 			return (int)daysTDone;
 		}	
-		public static long getHoursTLeft(){
+		public long getHoursTLeft(){
 			return hoursTLeft;
 		}
-		public static long getHoursTDone(){
+		public long getHoursTDone(){
 			return hoursTDone;
 		}
-		public static long getMinsTLeft(){
+		public long getMinsTLeft(){
 			return minsTLeft;
 		}
-		public static long getMinsTDone(){
+		public long getMinsTDone(){
 			return minsTDone;
 		}
-		public static long getSecsTLeft(){
+		public long getSecsTLeft(){
 			return secsTLeft;
 		}
-		public static long getSecsTDone(){
+		public long getSecsTDone(){
 			return secsTDone;
 		}
-		public static int getWeeksTLeft() {
+		public int getWeeksTLeft() {
 			return weeksTLeft;
 		}
-		public static int getWeeksTDone() {
+		public int getWeeksTDone() {
 			return weeksTDone;
 		}
-		public static int getMonthsTLeft() {
+		public int getMonthsTLeft() {
 			return monthsTLeft;
 		}
-		public static int getMonthsTDone() {
+		public int getMonthsTDone() {
 			return monthsTDone;
 		}		
-		public static int getDaysLeft(){
+		public int getDaysLeft(){
 			return daysLeft;
 		}
-		public static int getDaysDone(){
+		public int getDaysDone(){
 			return daysDone;
 		}	
-		public static long getHoursLeft(){
+		public long getHoursLeft(){
 			return hoursLeft;
 		}
-		public static long getHoursDone(){
+		public long getHoursDone(){
 			return hoursDone;
 		}
-		public static long getMinsLeft(){
+		public long getMinsLeft(){
 			return minsLeft;
 		}
-		public static long getMinsDone(){
+		public long getMinsDone(){
 			return minsDone;
 		}
-		public static long getSecsLeft(){
+		public long getSecsLeft(){
 			return secsLeft;
 		}
-		public static long getSecsDone(){
+		public long getSecsDone(){
 			return secsDone;
 		}
-		public static int getWeeksLeft() {
+		public int getWeeksLeft() {
 			return weeksLeft;
 		}
-		public static int getWeeksDone() {
+		public int getWeeksDone() {
 			return weeksDone;
 		}
-		public static int getMonthsLeft() {
+		public int getMonthsLeft() {
 			return monthsLeft;
 		}
-		public static int getMonthsDone() {
+		public int getMonthsDone() {
 			return monthsDone;
 		}
 }
