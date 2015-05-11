@@ -104,15 +104,17 @@ public class databaseAdapter {
         newChartValues.put(KEY_PIC, v6);
         db.insert(CHARTS_TABLE, null, newChartValues);
     }
-    public boolean updateStartDate(long rowId, String newSdate){
+    public boolean updateStartDate(String name, String date){
+        Log.i("updateStartDate", date);
         ContentValues args = new ContentValues();
-        args.put(KEY_START_DATE, newSdate);
-        return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+        args.put(KEY_START_DATE, date);
+        return db.update(CHARTS_TABLE, args, CHART_NAME+" = '"+name+"'",null)>0;
     }
-    public boolean updateEndDate(long rowId, String newEdate){
+    public boolean updateEndDate(String name, String date){
+        Log.i("updateEndDate", date);
         ContentValues args = new ContentValues();
-        args.put(KEY_END_DATE, newEdate);
-        return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+        args.put(KEY_END_DATE, date);
+        return db.update(CHARTS_TABLE, args, CHART_NAME+" = '"+name+"'",null)>0;
     }
     public boolean updatePic(String name, String url){
         Log.i("updatePic", url);
@@ -120,11 +122,11 @@ public class databaseAdapter {
         args.put(KEY_PIC, url);
         return db.update(CHARTS_TABLE, args, CHART_NAME+" = '"+name+"'",null)>0;
     }
-    public boolean updateTitle(long rowId, String url){
+    public boolean updateTitle(String name, String url){
         ContentValues args = new ContentValues();
         Log.i("updateTitle", "updateTitle");
         args.put(KEY_TITLE2, url);
-        return db.update(CHARTS_TABLE, args, KEY_ROWID+"="+rowId,null)>0;
+        return db.update(CHARTS_TABLE, args, CHART_NAME+" = '"+name+"'",null)>0;
     }
     public boolean deleteRecord(String name){
         Log.e("Delete Record", "Attempting to delete chart name..." + name);

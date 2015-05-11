@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -38,11 +37,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class MainActivity extends FragmentActivity implements ChartFragment.clickCallback, NewFragment.newChartCallback{
-        public static Context			context;
+	public static Context			context;
 	private databaseAdapter db					= null;
-	private databaseReader dbr					= null;
 	private static int				RESULT_LOAD_IMAGE	= 1;
-	private SectionsPagerAdapter	mSectionsPagerAdapter;
 	private ViewPager				mViewPager;
 	private String					noImage				= "noImage";
 	private boolean					running				= true;
@@ -57,12 +54,12 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		super.onCreate(savedInstanceState);
 		context = this.getBaseContext();
 		db = new databaseAdapter(context);
-		dbr = new databaseReader("Activity Create");
+		new databaseReader("Activity Create");
 		initCharts();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
-		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 		mViewPager.setCurrentItem(1);
@@ -153,6 +150,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		});
     }
 	private void myDateDialog(boolean start){
+
 		final Dialog setDate = new Dialog(this);
 		setDate.setContentView(R.layout.dialog_dates);
 		setDate.show();
@@ -166,6 +164,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			test = new View.OnClickListener() {
 				public void onClick(View view){
 					//----check date validity
+					int x = mViewPager.getCurrentItem()-1;
 					String[] EndDate=DBV.sEnd.split("/");
 					int Eday = Integer.parseInt(EndDate[0]);
 					int Emonth = Integer.parseInt(EndDate[1])-1;
@@ -179,14 +178,14 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 					calStart.set(Syear,Smonth,Sday,0,0,0);
 					calEnd.set(Eyear,Emonth,Eday,0,0,0);
 					if(calStart.getTimeInMillis()>calEnd.getTimeInMillis()){
-						DBV.sEnd = Sday + "/" + (Smonth+1) + "/" + Syear;
-						DBUpdate("endDate", DBV.sEnd);
+						String end = Sday + "/" + (Smonth+1) + "/" + Syear;
+						databaseReader.updateEndDate(chartFragList.get(x).getChartName(), end);
 						Toast.makeText(getBaseContext(), "End date moved",Toast.LENGTH_SHORT).show();
 					}
-					DBV.Sstart  = Sday + "/" + (Smonth+1) + "/" + Syear;
-					DBUpdate("startDate", DBV.Sstart);
+					String start  = Sday + "/" + (Smonth+1) + "/" + Syear;
+					databaseReader.updateStartDate(chartFragList.get(x).getChartName(), start);
+					chartFragList.get(x).readChartValues();
 					setDate.dismiss();
-					SetCounter.updateCounterAndDates();
 				}
 			};
 		} else {
@@ -195,6 +194,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			test = new View.OnClickListener() {
 				public void onClick(View view){
 					//----Check date validity
+					int x = mViewPager.getCurrentItem()-1;
 					String[] StartDate= DBV.Sstart.split("/");
 					int Sday = Integer.parseInt(StartDate[0]);
 					int Smonth = Integer.parseInt(StartDate[1])-1;
@@ -205,17 +205,18 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 					Locale home = new Locale("en");
 					Calendar calStart = Calendar.getInstance(home);
 					Calendar calEnd = Calendar.getInstance(home);
-					calStart.set(Syear,Smonth,Sday,0,0,0);
+					calStart.set(Syear, Smonth, Sday, 0, 0, 0);
 					calEnd.set(Eyear,Emonth,Eday,0,0,0);
+					String end;
 					if(calStart.getTimeInMillis()>calEnd.getTimeInMillis()){
-						DBV.sEnd = Sday + "/" + (Smonth+1) + "/" + Syear;
+						end = Sday + "/" + (Smonth+1) + "/" + Syear;
 						Toast.makeText(getBaseContext(), "Flux capacitor malfunction!",Toast.LENGTH_SHORT).show();
 					}else{
-						DBV.sEnd = Eday + "/" + (Emonth+1) + "/" + Eyear;	
+						end = Eday + "/" + (Emonth+ 1) + "/" + Eyear;
 					}
-					DBUpdate("endDate", DBV.sEnd);
+					databaseReader.updateEndDate(chartFragList.get(x).getChartName(), end);
+					chartFragList.get(x).readChartValues();
 					setDate.dismiss();
-					SetCounter.updateCounterAndDates();
 				}
 			};
 		}
@@ -232,7 +233,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		setTitle.setContentView(R.layout.dialog_title);
 		setTitle.setTitle("Set Title Text");
 		final EditText newTitle = (EditText) setTitle.findViewById(R.id.setNewTitle);
-		newTitle.setText(DBV.sTitle);
+		int x = mViewPager.getCurrentItem()-1;
+		newTitle.setText(chartFragList.get(x).getChartTitle());
 		setTitle.show();
 		newTitle.requestFocus();
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -240,9 +242,9 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		Button submitTitle = (Button) setTitle.findViewById(R.id.button2);
 		submitTitle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                DBV.sTitle = newTitle.getText().toString();
-                DBUpdate("title", DBV.sTitle);
-                Log.i("title updated", "--> " + DBV.sTitle + " <--");
+				int y = mViewPager.getCurrentItem()-1;
+                databaseReader.updateTitle(chartFragList.get(y).getChartName(), newTitle.getText().toString());
+				chartFragList.get(y).readChartValues();
                 setTitle.dismiss();
             }
         });
@@ -263,7 +265,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				setBG.dismiss();
 				DBV.sBgUrl = noImage;
 				databaseReader.updateBGURL(tempTitle, noImage);
-				chartFragList.get(mViewPager.getCurrentItem()-1).readChartValues();
+				chartFragList.get(mViewPager.getCurrentItem() - 1).readChartValues();
 				useWallpaper(mViewPager.getCurrentItem());
 			}
 		});
@@ -414,32 +416,14 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			Log.e("Fragment NOT Found", "??? #" + chartNo);
 		}
 	}
-	public void DBUpdate(String item,String data){
-		try {
-			db.open("DBUpdate()");
-		} catch (SQLException sqle) {
-			throw sqle;
-		}
-		if (item == "title") {
-			db.updateTitle(1, data);
-		} else if (item.equals("startDate")) {
-			db.updateStartDate(1, DBV.Sstart);
-		} else if (item == "endDate") {
-			db.updateEndDate(1, DBV.sEnd);
-		}
-		db.close();
-	}
+
+
 	public void updateHomeView(){
-		long itemId;
-		String name;
-		ChartFragment myFragment;
-		itemId = mViewPager.getCurrentItem();
-		name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
-		myFragment= (ChartFragment) fm.findFragmentByTag(name);
-		Log.e(">>Update<<", "Current Frag ID=" + itemId + ", Frag=" + myFragment);
+		int num = mViewPager.getCurrentItem();
+		Log.e(">>Update<<", "Current Frag ID=" + num + ", Frag=" + chartFragList.get(num-1));
 		Log.e(">>Update<<", "Current Background="+chartFragList.get(mViewPager.getCurrentItem()-1).getChartBgUrl());
 		try{
-			myFragment.updateHomeView();
+			chartFragList.get(num-1).updateChartView();
 		}catch (Exception e){
 			e.printStackTrace();
 		}

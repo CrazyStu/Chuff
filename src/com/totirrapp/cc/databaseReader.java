@@ -64,6 +64,21 @@ public class databaseReader {
         db.updatePic(chart, url);
         db.close();
     }
+    public static void updateTitle(String chart,String url){
+        db.open("set Title2");
+        db.updateTitle(chart, url);
+        db.close();
+    }
+    public static void updateStartDate(String chart,String url){
+        db.open("setEndDate");
+        db.updateStartDate(chart, url);
+        db.close();
+    }
+    public static void updateEndDate(String chart,String url){
+        db.open("setEndDate");
+        db.updateEndDate(chart, url);
+        db.close();
+    }
     public static void deleteChart(String chart){
         db.open("delete chart");
         db.deleteRecord(chart);
