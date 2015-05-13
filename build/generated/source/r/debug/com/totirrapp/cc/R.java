@@ -28,7 +28,7 @@ public final class R {
         public static final int SetTitleDialogBox=0x7f080009;
         public static final int TimeCompleted=0x7f080011;
         public static final int TimeRemaining=0x7f08002a;
-        public static final int action_settings=0x7f080052;
+        public static final int action_settings=0x7f080055;
         public static final int button2=0x7f08000c;
         public static final int chart_title=0x7f080046;
         public static final int dateButton=0x7f080008;
@@ -50,7 +50,7 @@ public final class R {
         public static final int hoursLeft=0x7f080038;
         public static final int hoursLeftT=0x7f08003a;
         public static final int hoursLeftText=0x7f080039;
-        public static final int mainView01=0x7f08004d;
+        public static final int linearLayout=0x7f080050;
         public static final int minsDone=0x7f080023;
         public static final int minsDoneT=0x7f080025;
         public static final int minsDoneText=0x7f080024;
@@ -63,15 +63,18 @@ public final class R {
         public static final int monthsLeft=0x7f08002c;
         public static final int monthsLeftT=0x7f08002e;
         public static final int monthsLeftText=0x7f08002d;
-        public static final int new_chart_text=0x7f08004e;
+        public static final int new_chart_text=0x7f080051;
         public static final int pager=0x7f080000;
         public static final int pager_title_strip=0x7f080001;
         public static final int percDoneText=0x7f080045;
         public static final int presetTitleText=0x7f08000a;
         public static final int progBar=0x7f080044;
-        public static final int rowText1=0x7f080050;
-        public static final int rowText2=0x7f080051;
-        public static final int row_format_layout=0x7f08004f;
+        public static final int progBarBlue=0x7f08004f;
+        public static final int progressBarRed=0x7f08004e;
+        public static final int progressLayout=0x7f08004d;
+        public static final int rowText1=0x7f080053;
+        public static final int rowText2=0x7f080054;
+        public static final int row_format_layout=0x7f080052;
         public static final int secsDone=0x7f080027;
         public static final int secsDoneT=0x7f080029;
         public static final int secsLeft=0x7f080040;
@@ -146,17 +149,19 @@ public final class R {
         public static final int percHolder=0x7f050017;
         public static final int press_here=0x7f050018;
         public static final int progBar=0x7f050019;
-        public static final int secs=0x7f05001a;
-        public static final int setTitle=0x7f05001b;
-        public static final int timecomp=0x7f05001c;
-        public static final int timerem=0x7f05001d;
-        public static final int title=0x7f05001e;
-        public static final int title1=0x7f05001f;
-        public static final int title_chart=0x7f050020;
-        public static final int title_help=0x7f050021;
-        public static final int title_new=0x7f050022;
-        public static final int useWallpaper=0x7f050023;
-        public static final int weeks=0x7f050024;
+        public static final int progBarRed=0x7f05001a;
+        public static final int progBlue=0x7f05001b;
+        public static final int secs=0x7f05001c;
+        public static final int setTitle=0x7f05001d;
+        public static final int timecomp=0x7f05001e;
+        public static final int timerem=0x7f05001f;
+        public static final int title=0x7f050020;
+        public static final int title1=0x7f050021;
+        public static final int title_chart=0x7f050022;
+        public static final int title_help=0x7f050023;
+        public static final int title_new=0x7f050024;
+        public static final int useWallpaper=0x7f050025;
+        public static final int weeks=0x7f050026;
     }
     public static final class style {
         /** 

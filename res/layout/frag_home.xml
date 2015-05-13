@@ -10,51 +10,81 @@
     tools:context=".MainActivity$TestFragment" >
 
 
-    <com.totirrapp.cc.HomeView
-        android:id="@+id/mainView01"
-        android:layout_width="fill_parent"
-        android:layout_height="800dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
-
-    <ImageView
-        android:id="@+id/progBar"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="0dp"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/progBar"
-        android:scaleType="fitXY"
-        android:src="@drawable/progress"
-        android:layout_margin="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginRight="0dp" />
+        android:layout_height="match_parent"
+        android:id="@+id/progressLayout">
 
-    <TextView
-        android:id="@+id/percDoneText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignRight="@id/progBar"
-        android:layout_marginBottom="0dp"
-        android:gravity="center"
-        android:text="@string/percHolder"
-        android:textColor="#000000"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/progressBarRed"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/progBarBlue"
+            android:background="#cdff100e"
+            android:contentDescription="@string/progBarRed" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progBarBlue"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignLeft="@+id/progBar"
+            android:layout_alignRight="@+id/progBar"
+            android:layout_toLeftOf="@+id/progBar"
+            android:contentDescription="@string/progBlue"
+            android:background="#c22137ff"
+            android:layout_alignWithParentIfMissing="false"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:id="@+id/progBar"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/progBar"
+            android:scaleType="fitXY"
+            android:src="@drawable/progress"
+            android:layout_margin="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="0dp" />
+
+        <TextView
+            android:id="@+id/percDoneText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@id/progBar"
+            android:layout_marginBottom="0dp"
+            android:gravity="center"
+            android:text="@string/percHolder"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/progBar"
+        android:layout_toRightOf="@+id/progressLayout"
         android:background="#66FFFFFF"
         android:orientation="vertical"
-        android:id="@+id/chart_title">
+        android:id="@+id/chart_title"
+        android:layout_toEndOf="@id/progressLayout">
 
         <TextView
             android:id="@+id/titleTop"
@@ -79,13 +109,13 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/percDoneText"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/progBar"
+        android:layout_toRightOf="@+id/progressLayout"
         android:background="#66FFFFFF"
         android:gravity="bottom"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
 
         <TextView
             android:id="@+id/timeDoneTextView"

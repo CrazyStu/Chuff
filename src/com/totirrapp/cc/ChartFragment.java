@@ -42,7 +42,7 @@ public class ChartFragment extends Fragment{
     private int endYear = 2013;
     private int endMonth = 7;
     private int endDay = 3;
-    private FragmentCounter counter;
+    private FragmentCounter counter = new FragmentCounter();;
     private int chartNo = 99;
     private ArrayList<String> values;
 
@@ -55,7 +55,6 @@ public class ChartFragment extends Fragment{
         } catch (ClassCastException e) {
             Log.d("attach test","implementation failed");
             e.printStackTrace();
-
         }
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -165,15 +164,18 @@ public class ChartFragment extends Fragment{
         chartBackground.setOnLongClickListener(longPress);
     }
     public void updateChartView(){
-        counter.updateCounter();
         try {
+            counter.updateCounter();
+            int height = (int)(rootView.getHeight()*((float)counter.getPercentDone()/100));
+            rootView.findViewById(id.progBarBlue).setMinimumHeight(height);
+            rootView.invalidate();
             if(percent == null){
                 percent = (TextView) rootView.findViewById(R.id.percDoneText);
                 timeDoneText = (TextView) rootView.findViewById(timeDoneTextView);
                 timeLeftText = (TextView) rootView.findViewById(R.id.timeLeftTextView);
                 titleBot = (TextView) rootView.findViewById(R.id.titleBot);
             }
-            percent.setText(DBV.percentDone + "%");
+            percent.setText(counter.getPercentDone() + "%");
             if(counter.getDaysTotalDone()>0){
                 timeDoneText.setText(counter.getDaysTotalDone() + " " + getString(R.string.daysDone));
             }else{
@@ -184,7 +186,7 @@ public class ChartFragment extends Fragment{
             }else{
                 timeLeftText.setText(counter.getHoursTotalLeft() + " " + getString(R.string.hoursLeft));
             }
-            titleBot.setText(values.get(2));
+            titleBot.setText(chartTitle);
         } catch (Exception e) {
             Log.d("Update Home View", "update home View failed");
             e.printStackTrace();
@@ -218,14 +220,8 @@ public class ChartFragment extends Fragment{
         private Calendar compDone = Calendar.getInstance(home);
         private long compareLeft;
         private long compareDone;
-        private int percent1;
-        private int percent2;
-//        private int startYear = 2013;
-//        private int startMonth =02;
-//        private int startDay =25;
-//        private int endYear = 2013;
-//        private int endMonth = 7;
-//        private int endDay = 3;
+        private int percentLeft;
+        private int percentDone;
         private int monthsTotalLeft;
         private int monthsTotalDone;
         private int weeksTotalLeft;
@@ -252,72 +248,76 @@ public class ChartFragment extends Fragment{
         private int secsDone;
 
         public void updateCounter() {
-            Log.i("SetCounter", "Update Counter");
-            calCurrent.setTime(new Date());
-            calTarget.set(endYear, endMonth, endDay,0,0,0);
-            calStart.set(startYear, startMonth, startDay,0,0,0);
+            try {
+                Log.i("SetCounter", "Update Counter");
+                calCurrent.setTime(new Date());
+                calTarget.set(endYear, endMonth, endDay, 0, 0, 0);
+                calStart.set(startYear, startMonth, startDay, 0, 0, 0);
 
 //----Check date validity
-            compareLeft = calTarget.getTimeInMillis()-calCurrent.getTimeInMillis();
-            compareDone = calCurrent.getTimeInMillis()-calStart.getTimeInMillis();
-            if(compareLeft<0){
-                compareLeft=0;
-                compareDone = calTarget.getTimeInMillis()-calStart.getTimeInMillis();
-            }
-            if(compareDone<0){
-                compareDone = 0;
-                compareLeft = calTarget.getTimeInMillis()-calStart.getTimeInMillis();
-            }
-            percent1 = (int) ((float)compareLeft/(compareLeft+compareDone)*100);
-            percent2 = (int) ((float)compareDone/(compareLeft+compareDone)*100);
-            DBV.percentDone = percent2;
+                compareLeft = calTarget.getTimeInMillis() - calCurrent.getTimeInMillis();
+                compareDone = calCurrent.getTimeInMillis() - calStart.getTimeInMillis();
+                if (compareLeft < 0) {
+                    compareLeft = 0;
+                    compareDone = calTarget.getTimeInMillis() - calStart.getTimeInMillis();
+                }
+                if (compareDone < 0) {
+                    compareDone = 0;
+                    compareLeft = calTarget.getTimeInMillis() - calStart.getTimeInMillis();
+                }
+                percentLeft = (int) ((float) compareLeft / (compareLeft + compareDone) * 100);
+                percentDone = (int) ((float) compareDone / (compareLeft + compareDone) * 100);
 //----Time done TOTALS
-            compDone.setTimeInMillis(compareDone);
-            secsTDone=compDone.getTimeInMillis()/1000;
-            minsTotalDone =secsTDone/60;
-            hoursTotalDone = minsTotalDone /60;
-            daysTotalDone =(hoursTotalDone /24);
-            weeksTotalDone =(int) (daysTotalDone /7);
-            if(daysTotalDone >29){
-                monthsTotalDone = calCurrent.get(Calendar.MONTH)- startMonth -1;
-            }else{
-                monthsTotalDone =0;}
-            DBV.daysDone = (int) daysTotalDone;
-            DBV.hoursDone = (int) hoursTotalDone;
+                compDone.setTimeInMillis(compareDone);
+                secsTDone = compDone.getTimeInMillis() / 1000;
+                minsTotalDone = secsTDone / 60;
+                hoursTotalDone = minsTotalDone / 60;
+                daysTotalDone = (hoursTotalDone / 24);
+                weeksTotalDone = (int) (daysTotalDone / 7);
+                if (daysTotalDone > 29) {
+                    monthsTotalDone = calCurrent.get(Calendar.MONTH) - startMonth - 1;
+                } else {
+                    monthsTotalDone = 0;
+                }
+//            DBV.daysDone = (int) daysTotalDone;
+//            DBV.hoursDone = (int) hoursTotalDone;
 //----Time left TOTALS
-            compLeft.setTimeInMillis(compareLeft);
-            secsTotalLeft =compareLeft/1000;
-            minsTotalLeft = secsTotalLeft /60;
-            hoursTotalLeft = minsTotalLeft /60;
-            daysTotalLeft =(int) (hoursTotalLeft /24);
-            weeksTotalLeft = daysTotalLeft /7;
-            if(daysTotalLeft >29){
-                monthsTotalLeft =(int) Math.floor(daysTotalLeft /30.14667);
-            }else{
-                monthsTotalLeft =0;}
-            DBV.daysLeft = daysTotalLeft;
-            DBV.hoursLeft = (int) hoursTotalLeft;
+                compLeft.setTimeInMillis(compareLeft);
+                secsTotalLeft = compareLeft / 1000;
+                minsTotalLeft = secsTotalLeft / 60;
+                hoursTotalLeft = minsTotalLeft / 60;
+                daysTotalLeft = (int) (hoursTotalLeft / 24);
+                weeksTotalLeft = daysTotalLeft / 7;
+                if (daysTotalLeft > 29) {
+                    monthsTotalLeft = (int) Math.floor(daysTotalLeft / 30.14667);
+                } else {
+                    monthsTotalLeft = 0;
+                }
+//            DBV.daysLeft = daysTotalLeft;
+//            DBV.hoursLeft = (int) hoursTotalLeft;
 //----Time Done breakdown
-            monthsDone = monthsTotalDone;
-            weeksDone=(int) ((compareDone/1000/60/60/24/7)-(monthsTotalDone *4));
-            daysDone=(int) ((compareDone/1000/60/60/24)-(weeksTotalDone *7));
-            hoursDone=(int) ((compareDone/1000/60/60)-(daysTotalDone *24));
-            minsDone=(int) ((compareDone/1000/60)-(hoursTotalDone *60));
-            secsDone=(int) ((compareDone/1000)-(minsTotalDone *60));
+                monthsDone = monthsTotalDone;
+                weeksDone = (int) ((compareDone / 1000 / 60 / 60 / 24 / 7) - (monthsTotalDone * 4));
+                daysDone = (int) ((compareDone / 1000 / 60 / 60 / 24) - (weeksTotalDone * 7));
+                hoursDone = (int) ((compareDone / 1000 / 60 / 60) - (daysTotalDone * 24));
+                minsDone = (int) ((compareDone / 1000 / 60) - (hoursTotalDone * 60));
+                secsDone = (int) ((compareDone / 1000) - (minsTotalDone * 60));
 //----Time Left breakdown
-            monthsLeft= monthsTotalLeft;
-            weeksLeft=(int) ((compareLeft/1000/60/60/24/7)-(monthsTotalLeft *4));
-            daysLeft=(int) ((compareLeft/1000/60/60/24)-(weeksTotalLeft *7));
-            hoursLeft=(int) ((compareLeft/1000/60/60)-(daysTotalLeft *24));
-            minsLeft=(int) ((compareLeft/1000/60)-(hoursTotalLeft *60));
-            secsLeft=(int) ((compareLeft/1000)-(minsTotalLeft *60));
-
+                monthsLeft = monthsTotalLeft;
+                weeksLeft = (int) ((compareLeft / 1000 / 60 / 60 / 24 / 7) - (monthsTotalLeft * 4));
+                daysLeft = (int) ((compareLeft / 1000 / 60 / 60 / 24) - (weeksTotalLeft * 7));
+                hoursLeft = (int) ((compareLeft / 1000 / 60 / 60) - (daysTotalLeft * 24));
+                minsLeft = (int) ((compareLeft / 1000 / 60) - (hoursTotalLeft * 60));
+                secsLeft = (int) ((compareLeft / 1000) - (minsTotalLeft * 60));
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
         public int getPercentRemaining(){
-            return percent1;
+            return percentLeft;
         }
-        public int getPercentCompleted(){
-            return percent2;
+        public int getPercentDone(){
+            return percentDone;
         }
         public String getStartDate(){
             String x = startDay +"/"+(1+ startMonth)+"/"+ startYear;

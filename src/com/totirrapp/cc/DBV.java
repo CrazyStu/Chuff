@@ -10,8 +10,8 @@ public class DBV {
 		public static String sEnd = "02/02/2020";
 
 
-		public static int sWidth = 720;
-		public static int sHeight = 1280;
+//		public static int sWidth = 720;
+//		public static int sHeight = 1280;
 //		public static String sTheme = "Light";
 		
 		public static int daysLeft = 25;

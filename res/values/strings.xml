@@ -38,5 +38,7 @@
     <string name="change_dates">to change dates</string>
     <string name="change_title">to change title</string>
     <string name="delete_chart">Delete This Chart</string>
+    <string name="progBlue">Progress Bar Blue</string>
+    <string name="progBarRed">Progress Bar Red</string>
 
 </resources>
