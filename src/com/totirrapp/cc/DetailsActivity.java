@@ -1,20 +1,18 @@
 package com.totirrapp.cc;
 
 import android.app.Activity;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import static com.totirrapp.cc.SetCounter.getDaysDone;
 import static com.totirrapp.cc.SetCounter.getDaysLeft;
 import static com.totirrapp.cc.SetCounter.getDaysTDone;
 import static com.totirrapp.cc.SetCounter.getDaysTLeft;
-import static com.totirrapp.cc.SetCounter.getEndDate;
 import static com.totirrapp.cc.SetCounter.getHoursDone;
 import static com.totirrapp.cc.SetCounter.getHoursLeft;
 import static com.totirrapp.cc.SetCounter.getHoursTDone;
@@ -31,32 +29,67 @@ import static com.totirrapp.cc.SetCounter.getSecsDone;
 import static com.totirrapp.cc.SetCounter.getSecsLeft;
 import static com.totirrapp.cc.SetCounter.getSecsTDone;
 import static com.totirrapp.cc.SetCounter.getSecsTLeft;
-import static com.totirrapp.cc.SetCounter.getStartDate;
 import static com.totirrapp.cc.SetCounter.getWeeksDone;
 import static com.totirrapp.cc.SetCounter.getWeeksLeft;
 import static com.totirrapp.cc.SetCounter.getWeeksTDone;
 import static com.totirrapp.cc.SetCounter.getWeeksTLeft;
-import static com.totirrapp.cc.SetCounter.updateCounter;
 
 public class DetailsActivity extends Activity {
-    public static Context context;
-    private databaseAdapter db					= null;
     private boolean					running				= true;
     private detailsThread			MT;
-	public DetailsActivity() {
-	}
+    private String chartName = "Chart Name Test";
+    private String chartHeader = "I Can't Wait...";
+    private String chartTitle = "StaticTitle";
+    private String chartStart = "02/02/2002";
+    private String chartEnd = "02/02/2020";
+    private String chartBgUrl = "StaticURL";
+    private ArrayList<String> values;
+    private int chartNo = 99;
+    private TextView startD;
+    private TextView endD;
+
+    private TextView num106;
+    private TextView num105;
+    private TextView num104;
+    private TextView num103;
+    private  TextView num102;
+    private  TextView num101;
+
+    private TextView num160;
+    private TextView num150;
+    private TextView num140;
+    private    TextView num130;
+    private   TextView num120;
+    private   TextView num110;
+
+    private   TextView num206;
+    private   TextView num205;
+    private  TextView num204;
+    private TextView num203;
+    private  TextView num202;
+    private   TextView num201;
+
+    private   TextView num210;
+    private   TextView num220;
+    private   TextView num230;
+    private  TextView num240;
+    private   TextView num250;
+    private  TextView num260;
+
+    public DetailsActivity() {
+    }
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        context = this.getBaseContext();
-        db = new databaseAdapter(context);
-        DBReadAll();
-        Log.i("DBV1", DBV.sTitle);
-        Log.i("DBV2", DBV.Sstart);
-        Log.i("DBV3", DBV.sEnd);
-        Log.i("DBV4", DBV.sBgUrl);
+        try {
+            chartNo = getIntent().getExtras().getInt("number");
+            readChartValues();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.frag_details);
+        setupView();
     }
     protected void onPause(){
         super.onPause();
@@ -75,57 +108,68 @@ public class DetailsActivity extends Activity {
             e.printStackTrace();
         }
     }
-    public void DBReadAll(){
-        Cursor myCursor;
-        try {
-            db.open("DBReadAll");
-        } catch (SQLException e) {
-            Log.e("DBReadAll error", "failed to open database");
-            throw e;
+    public void readChartValues(){
+        String y = "Chart"+chartNo+">ReadChart()";
+        try{
+            values = databaseReader.getChartInfo(chartNo,y);
+        }catch (NullPointerException e){
+            e.printStackTrace();
         }
-        myCursor = db.getChartNo(1);
-        DBV.sTitle = myCursor.getString(1);
-        DBV.Sstart = myCursor.getString(2);
-        DBV.sEnd = myCursor.getString(3);
-        DBV.sBgUrl = myCursor.getString(4);
-        db.close();
+        if (values!=null) {
+            chartName = values.get(0);
+            chartHeader = values.get(1);
+            chartTitle = values.get(2);
+            chartStart = values.get(3);
+            chartEnd = values.get(4);
+            chartBgUrl = values.get(5);
+//
+//            String[] StartDate = chartStart.split("/");
+//            startDay = Integer.parseInt(StartDate[0]);
+//            startMonth = Integer.parseInt(StartDate[1]) - 1;
+//            startYear = Integer.parseInt(StartDate[2]);
+//
+//            String[] EndDate = chartEnd.split("/");
+//            endDay = Integer.parseInt(EndDate[0]);
+//            endMonth = Integer.parseInt(EndDate[1]) - 1;
+//            endYear = Integer.parseInt(EndDate[2]);
+        }
+    }
+    public void setupView(){
+        startD = (TextView) findViewById(R.id.startDate);
+        endD = (TextView) findViewById(R.id.endDate);
+
+        num106 = (TextView) findViewById(R.id.monthsDoneT);
+        num105 = (TextView) findViewById(R.id.weeksDoneT);
+        num104 = (TextView) findViewById(R.id.daysDoneT);
+        num103 = (TextView) findViewById(R.id.hoursDoneT);
+        num102 = (TextView) findViewById(R.id.minsDoneT);
+        num101 = (TextView) findViewById(R.id.secsDoneT);
+
+        num160 = (TextView) findViewById(R.id.monthsDone);
+        num150 = (TextView) findViewById(R.id.weeksDone);
+        num140 = (TextView) findViewById(R.id.daysDone);
+        num130 = (TextView) findViewById(R.id.hoursDone);
+        num120 = (TextView) findViewById(R.id.minsDone);
+        num110 = (TextView) findViewById(R.id.secsDone);
+
+        num206 = (TextView) findViewById(R.id.monthsLeftT);
+        num205 = (TextView) findViewById(R.id.weeksLeftT);
+        num204 = (TextView) findViewById(R.id.daysLeftT);
+        num203 = (TextView) findViewById(R.id.hoursLeftT);
+        num202 = (TextView) findViewById(R.id.minsLeftT);
+        num201 = (TextView) findViewById(R.id.secsLeftT);
+
+        num210 = (TextView) findViewById(R.id.secsLeft);
+        num220 = (TextView) findViewById(R.id.minsLeft);
+        num230 = (TextView) findViewById(R.id.hoursLeft);
+        num240 = (TextView) findViewById(R.id.daysLeft);
+        num250 = (TextView) findViewById(R.id.weeksLeft);
+        num260 = (TextView) findViewById(R.id.monthsLeft);
     }
     public void updateDetailsView(){
         Log.i("detailsFrag", "updateDetailsView()");
-
-        TextView startD = (TextView) findViewById(R.id.startDate);
-        TextView endD = (TextView) findViewById(R.id.endDate);
-
-        TextView num106 = (TextView) findViewById(R.id.monthsDoneT);
-        TextView num105 = (TextView) findViewById(R.id.weeksDoneT);
-        TextView num104 = (TextView) findViewById(R.id.daysDoneT);
-        TextView num103 = (TextView) findViewById(R.id.hoursDoneT);
-        TextView num102 = (TextView) findViewById(R.id.minsDoneT);
-        TextView num101 = (TextView) findViewById(R.id.secsDoneT);
-
-        TextView num160 = (TextView) findViewById(R.id.monthsDone);
-        TextView num150 = (TextView) findViewById(R.id.weeksDone);
-        TextView num140 = (TextView) findViewById(R.id.daysDone);
-        TextView num130 = (TextView) findViewById(R.id.hoursDone);
-        TextView num120 = (TextView) findViewById(R.id.minsDone);
-        TextView num110 = (TextView) findViewById(R.id.secsDone);
-
-        TextView num206 = (TextView) findViewById(R.id.monthsLeftT);
-        TextView num205 = (TextView) findViewById(R.id.weeksLeftT);
-        TextView num204 = (TextView) findViewById(R.id.daysLeftT);
-        TextView num203 = (TextView) findViewById(R.id.hoursLeftT);
-        TextView num202 = (TextView) findViewById(R.id.minsLeftT);
-        TextView num201 = (TextView) findViewById(R.id.secsLeftT);
-
-        TextView num210 = (TextView) findViewById(R.id.secsLeft);
-        TextView num220 = (TextView) findViewById(R.id.minsLeft);
-        TextView num230 = (TextView) findViewById(R.id.hoursLeft);
-        TextView num240 = (TextView) findViewById(R.id.daysLeft);
-        TextView num250 = (TextView) findViewById(R.id.weeksLeft);
-        TextView num260 = (TextView) findViewById(R.id.monthsLeft);
-
-        startD.setText("Start: " + getStartDate());
-        endD.setText("End: " + getEndDate());
+        startD.setText("Start: " + chartStart);
+        endD.setText("End: " + chartEnd);
 
         num101.setText(String.format("%,d", getSecsTDone()));
         num102.setText(String.format("%,d", getMinsTDone()));
@@ -160,11 +204,10 @@ public class DetailsActivity extends Activity {
         public void run(){
             Log.e("MT State", MT.getState() + "");
             while (running) {
-
-                    try {
-                        updateCounter();
-                        runOnUiThread(new Runnable() {public void run(){updateDetailsView();}});
-                    } catch (Exception e) {e.printStackTrace();}
+                try {
+//                        updateCounter();
+                    runOnUiThread(new Runnable() {public void run(){updateDetailsView();}});
+                } catch (Exception e) {e.printStackTrace();}
                 try {
                     sleep(1000);
                 } catch (Exception e) {e.printStackTrace();}

@@ -102,9 +102,12 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	public void onShortPress(int v){
       if (v == R.id.frag_home_parent_view) {
             Intent intent = new Intent(this, DetailsActivity.class);
+		 	intent.putExtra("number",mViewPager.getCurrentItem());
+//		  intent.putExta("counter",chartFragList.get(mViewPager.getCurrentItem()).getCounter());
             startActivity(intent);
         }
 	}
+
     public void onLongPress(int v){
         if (v == R.id.chart_title) {
             myTitleDialog();
@@ -409,7 +412,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		bg1 = Bitmap.createBitmap(bg1, 0, 0, bg1.getWidth(), bg1.getHeight(), matrix, true);
 		return bg1;
 	}
-//////////////////////////////////////////
 	private void useWallpaper(int chartNo){
 			chartFragList.get(chartNo-1).removeBackground();
 	}
@@ -496,7 +498,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				itemId = mViewPager.getCurrentItem();
 				if(itemId>0&&itemId<DBV.chartCount+1) {
 					try {
-						SetCounter.updateCounter();
+//						SetCounter.updateCounter();
 						runOnUiThread(new Runnable() {
 							public void run() {
 								updateHomeView();

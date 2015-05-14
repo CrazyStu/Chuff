@@ -46,8 +46,12 @@ public class ChartFragment extends Fragment{
     private int chartNo = 99;
     private ArrayList<String> values;
 
+    public ChartFragment(){
+        Log.d("--Chart Fragment--","ChartFreagment() Called");
+    }
     @Override
     public void onAttach(Activity activity) {
+        Log.d("--Chart Fragment--","onAttach Called");
         super.onAttach(activity);
         try {
             call = (clickCallback) activity;
@@ -58,6 +62,7 @@ public class ChartFragment extends Fragment{
         }
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("--Chart Fragment--","onCreateView Called");
 		rootView = inflater.inflate(layout.frag_home, container, false);
         counter = new FragmentCounter();
         try {
@@ -210,6 +215,9 @@ public class ChartFragment extends Fragment{
     public String getChartBgUrl(){
         return chartBgUrl;
     }
+    public FragmentCounter getCounter(){
+        return counter;
+    }
 
     public class FragmentCounter {
         private Locale home = new Locale("en");
@@ -249,7 +257,7 @@ public class ChartFragment extends Fragment{
 
         public void updateCounter() {
             try {
-                Log.i("SetCounter", "Update Counter");
+                Log.i("ChartFragCounter", "Update Counter");
                 calCurrent.setTime(new Date());
                 calTarget.set(endYear, endMonth, endDay, 0, 0, 0);
                 calStart.set(startYear, startMonth, startDay, 0, 0, 0);

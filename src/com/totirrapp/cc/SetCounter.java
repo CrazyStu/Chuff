@@ -59,7 +59,7 @@ public class SetCounter {
 			Eday = Integer.parseInt(EndDate[0]);
 			Emonth = Integer.parseInt(EndDate[1])-1;
 			Eyear = Integer.parseInt(EndDate[2]);
-			updateCounter();
+//			updateCounter();
 		}
 		public static void updateCounter() {
 			Log.i("SetCounter", "Update Counter");
