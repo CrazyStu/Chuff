@@ -9,31 +9,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import static com.totirrapp.cc.SetCounter.getDaysDone;
-import static com.totirrapp.cc.SetCounter.getDaysLeft;
-import static com.totirrapp.cc.SetCounter.getDaysTDone;
-import static com.totirrapp.cc.SetCounter.getDaysTLeft;
-import static com.totirrapp.cc.SetCounter.getHoursDone;
-import static com.totirrapp.cc.SetCounter.getHoursLeft;
-import static com.totirrapp.cc.SetCounter.getHoursTDone;
-import static com.totirrapp.cc.SetCounter.getHoursTLeft;
-import static com.totirrapp.cc.SetCounter.getMinsDone;
-import static com.totirrapp.cc.SetCounter.getMinsLeft;
-import static com.totirrapp.cc.SetCounter.getMinsTDone;
-import static com.totirrapp.cc.SetCounter.getMinsTLeft;
-import static com.totirrapp.cc.SetCounter.getMonthsDone;
-import static com.totirrapp.cc.SetCounter.getMonthsLeft;
-import static com.totirrapp.cc.SetCounter.getMonthsTDone;
-import static com.totirrapp.cc.SetCounter.getMonthsTLeft;
-import static com.totirrapp.cc.SetCounter.getSecsDone;
-import static com.totirrapp.cc.SetCounter.getSecsLeft;
-import static com.totirrapp.cc.SetCounter.getSecsTDone;
-import static com.totirrapp.cc.SetCounter.getSecsTLeft;
-import static com.totirrapp.cc.SetCounter.getWeeksDone;
-import static com.totirrapp.cc.SetCounter.getWeeksLeft;
-import static com.totirrapp.cc.SetCounter.getWeeksTDone;
-import static com.totirrapp.cc.SetCounter.getWeeksTLeft;
-
 public class DetailsActivity extends Activity {
     private boolean					running				= true;
     private detailsThread			MT;
@@ -43,6 +18,7 @@ public class DetailsActivity extends Activity {
     private String chartStart = "02/02/2002";
     private String chartEnd = "02/02/2020";
     private String chartBgUrl = "StaticURL";
+    private CounterFragment counter;
     private ArrayList<String> values;
     private int chartNo = 99;
     private TextView startD;
@@ -77,12 +53,16 @@ public class DetailsActivity extends Activity {
     private  TextView num260;
 
     public DetailsActivity() {
+//        counter = new CounterFragment();
     }
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         try {
-            chartNo = getIntent().getExtras().getInt("number");
-            readChartValues();
+            chartStart = getIntent().getExtras().getString("start");
+            chartEnd = getIntent().getExtras().getString("end");
+            Log.e("gotExtras?","start#end "+chartStart+"#"+chartEnd);
+            counter = new CounterFragment(chartStart,chartEnd);
+//            readChartValues();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -171,33 +151,33 @@ public class DetailsActivity extends Activity {
         startD.setText("Start: " + chartStart);
         endD.setText("End: " + chartEnd);
 
-        num101.setText(String.format("%,d", getSecsTDone()));
-        num102.setText(String.format("%,d", getMinsTDone()));
-        num103.setText(String.format("%,d", getHoursTDone()));
-        num104.setText(String.format("%,d", getDaysTDone()));
-        num105.setText(String.format("%,d", getWeeksTDone()));
-        num106.setText(String.format("%,d", getMonthsTDone()));
+        num101.setText(String.format("%,d", counter.getSecsTotalDone()));
+        num102.setText(String.format("%,d", counter.getMinsTotalDone()));
+        num103.setText(String.format("%,d", counter.getHoursTotalDone()));
+        num104.setText(String.format("%,d", counter.getDaysTotalDone()));
+        num105.setText(String.format("%,d", counter.getWeeksTotalDone()));
+        num106.setText(String.format("%,d", counter.getMonthsTotalDone()));
 
-        num110.setText("" + getSecsDone());
-        num120.setText("" + getMinsDone());
-        num130.setText("" + getHoursDone());
-        num140.setText("" + getDaysDone());
-        num150.setText("" + getWeeksDone());
-        num160.setText("" + getMonthsDone());
+        num110.setText("" + counter.getSecsDone());
+        num120.setText("" + counter.getMinsDone());
+        num130.setText("" + counter.getHoursDone());
+        num140.setText("" + counter.getDaysDone());
+        num150.setText("" + counter.getWeeksDone());
+        num160.setText("" + counter.getMonthsDone());
 
-        num201.setText(String.format("%,d", getSecsTLeft()));
-        num202.setText(String.format("%,d", getMinsTLeft()));
-        num203.setText(String.format("%,d", getHoursTLeft()));
-        num204.setText(String.format("%,d", getDaysTLeft()));
-        num205.setText(String.format("%,d", getWeeksTLeft()));
-        num206.setText(String.format("%,d", getMonthsTLeft()));
+        num201.setText(String.format("%,d", counter.getSecsTotalLeft()));
+        num202.setText(String.format("%,d", counter.getMinsTotalLeft()));
+        num203.setText(String.format("%,d", counter.getHoursTotalLeft()));
+        num204.setText(String.format("%,d", counter.getDaysTotalLeft()));
+        num205.setText(String.format("%,d", counter.getWeeksTotalLeft()));
+        num206.setText(String.format("%,d", counter.getMonthsTotalLeft()));
 
-        num210.setText("" + getSecsLeft());
-        num220.setText("" + getMinsLeft());
-        num230.setText("" + getHoursLeft());
-        num240.setText("" + getDaysLeft());
-        num250.setText(getWeeksLeft() + "");
-        num260.setText(getMonthsLeft() + "");
+        num210.setText("" + counter.getSecsLeft());
+        num220.setText("" + counter.getMinsLeft());
+        num230.setText("" + counter.getHoursLeft());
+        num240.setText("" + counter.getDaysLeft());
+        num250.setText(counter.getWeeksLeft() + "");
+        num260.setText(counter.getMonthsLeft() + "");
 
     }
     private class detailsThread extends Thread {
@@ -205,7 +185,7 @@ public class DetailsActivity extends Activity {
             Log.e("MT State", MT.getState() + "");
             while (running) {
                 try {
-//                        updateCounter();
+                        counter.updateCounter();
                     runOnUiThread(new Runnable() {public void run(){updateDetailsView();}});
                 } catch (Exception e) {e.printStackTrace();}
                 try {

@@ -45,6 +45,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private boolean					running				= true;
 	private detailsThread			MT;
 	private Bitmap					bg1;
+	private int screenHMem;
+	private int screenWMem;
 	private String 					tempTitle = null;
 	private FragmentManager 		fm = this.getSupportFragmentManager();
 	private ArrayList<ChartFragment> chartFragList = new ArrayList<ChartFragment>();
@@ -101,9 +103,11 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	}
 	public void onShortPress(int v){
       if (v == R.id.frag_home_parent_view) {
+		  ChartFragment temp = chartFragList.get(mViewPager.getCurrentItem()-1);
             Intent intent = new Intent(this, DetailsActivity.class);
 		 	intent.putExtra("number",mViewPager.getCurrentItem());
-//		  intent.putExta("counter",chartFragList.get(mViewPager.getCurrentItem()).getCounter());
+		  intent.putExtra("start", temp.getChartStart());
+		  intent.putExtra("end",temp.getChartEnd());
             startActivity(intent);
         }
 	}
@@ -334,13 +338,16 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				bg1 = loadSelectedImage(url, screenW, screenH);
 			} else {
 				Log.i("BgHandler", "Image not found---Loading default background");
-
 				bg1=null;
 			}
 		}
 		return bg1;
 	}
 	private Bitmap loadSelectedImage(String bgURL,int screenW,int screenH){
+		if(screenHMem==0){
+			screenHMem = screenH;
+			screenWMem = screenW;
+		}
 		boolean landscape = false;
 		BitmapFactory.Options bgOptions = new BitmapFactory.Options();
 		// ========Check size and get sample size======================
@@ -348,17 +355,18 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		bg1 = BitmapFactory.decodeFile(bgURL, bgOptions);
 		int imageHeight = bgOptions.outHeight;
 		int imageWidth = bgOptions.outWidth;
-		float ScreenAspect = (float) screenH / (float) screenW;
+		float ScreenAspect = (float) screenHMem / (float) screenWMem;
 		float ImageAspect = (float) bgOptions.outHeight / (float) bgOptions.outWidth;
 		if (ImageAspect < 1) {
 			landscape = true;
 		}
-		Log.i("Image","W="+bgOptions.outWidth+"H= " + bgOptions.outHeight+"Landscape=" + landscape);
+		Log.i("Screen","W="+screenWMem+" H= " + screenHMem+"Landscape=" + landscape);
+		Log.i("Image","W="+bgOptions.outWidth+" H= " + bgOptions.outHeight+"Landscape=" + landscape);
 		int iscale;
 		if (landscape) {
 			ImageAspect = (float) bgOptions.outWidth / (float) bgOptions.outHeight;
-			if (imageHeight > screenH) {
-				iscale = (int) ((float) imageHeight / (float) screenH);
+			if (imageHeight > screenHMem) {
+				iscale = (int) ((float) imageHeight / (float) screenHMem);
 				bgOptions.inSampleSize = iscale;
 			} else {
 				iscale = 1;
@@ -366,14 +374,15 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			}
 		} else {
 			ImageAspect = (float) bgOptions.outHeight / (float) bgOptions.outWidth;
-			if (imageWidth > screenW) {
-				iscale = (int) ((float) imageWidth / (float) screenW) + 2;
+			if (imageWidth > screenWMem) {
+				iscale = (int) ((float) imageWidth / (float) screenWMem) + 2;
 				bgOptions.inSampleSize = iscale;
 			} else {
 				iscale = 1;
 				bgOptions.inSampleSize = iscale;
 			}
 		}
+
 		Log.i("Image","SampleSize="+iscale);
 		// =============Read rotation==============================
 		ExifInterface exif = null;
@@ -393,9 +402,9 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		bg1 = BitmapFactory.decodeFile(bgURL, bgOptions);
 		Log.i("Image", "Width="+bg1.getWidth()+"Height= " + bg1.getHeight());
 		if (landscape) {
-			bg1 = Bitmap.createScaledBitmap(bg1, (int) (screenH * ImageAspect), screenH, true);
+			bg1 = Bitmap.createScaledBitmap(bg1, (int) (screenHMem * ImageAspect), screenHMem, true);
 		} else {
-			bg1 = Bitmap.createScaledBitmap(bg1, screenW, (int) (screenW * ImageAspect), true);
+			bg1 = Bitmap.createScaledBitmap(bg1, screenWMem, (int) (screenWMem * ImageAspect), true);
 //			Log.i("BgHandler", "Size=" + screenW + " x " + (int) (screenW * ImageAspect));
 		}
 		// ==============rotate as required============================
