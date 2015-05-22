@@ -143,17 +143,16 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
     }
     public void newChartRequest(int v){
 		final Dialog newChartDialog = new Dialog(this);
-		newChartDialog.setContentView(R.layout.dialog_title);
-		newChartDialog.setTitle("Chart Name");
+		newChartDialog.setContentView(R.layout.dialog_new);
+		newChartDialog.setTitle(R.string.newChartText);
 		final EditText newTitle = (EditText) newChartDialog.findViewById(R.id.setNewTitle);
-		newTitle.setText(DBV.sName);
+		newTitle.setText(R.string.chartName);
 		newChartDialog.show();
 		Button submitChart = (Button) newChartDialog.findViewById(R.id.button2);
 		submitChart.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				DBV.sName = newTitle.getText().toString();
 				int x = mViewPager.getCurrentItem();
-				String t1 = DBV.sName;
+				String t1 =  newTitle.getText().toString();
 				String t2 = "I can't wait...";
 				String t3 = "for what?";
 				String t4 = "01/01/2015";
@@ -161,7 +160,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				String t6 = "No Image";
 				try {
 					databaseReader.newChart(t1, t2, t3, t4, t5, t6);
-					removePage(x);
+					removePage(x, null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -276,7 +275,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		tempTitle = chartFragList.get(mViewPager.getCurrentItem()).getChartName();
 		Log.e("tempTitle", "title is " + tempTitle);
 		setBG.setTitle("Set background for " + tempTitle);
-//		tempTitle = (String)mSectionsPagerAdapter.getPageTitle(mViewPager.getCurrentItem());
 
 		setBG.show();
 		Button wallpaperButton = (Button) setBG.findViewById(R.id.wallpaperButton);
@@ -301,8 +299,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			public void onClick(View view) {
 				int x = mViewPager.getCurrentItem();
 				setBG.dismiss();
-				databaseReader.deleteChart(tempTitle);
-				removePage(x);
+//				databaseReader.deleteChart(tempTitle);
+				removePage(x, tempTitle);
 			}
 		});
 	}
@@ -446,12 +444,19 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			e.printStackTrace();
 		}
 	}
-	public void removePage(int x){
+	public void removePage(int x, String title){
+		Fragment myFragment;
+		if(title!=null){
+			databaseReader.deleteChart(title);
+			myFragment= chartFragList.get(x);
+			mViewPager.setCurrentItem(x-1);
+		}else{
+			long itemId = (long) x;
+			String name = "android:switcher:" + mViewPager.getId() + ":" + itemId;
+			myFragment= fm.findFragmentByTag(name);
+		}
 		recreate();
-//		long itemId = (long) x;
 		FragmentTransaction ft;
-		String name = "android:switcher:" + mViewPager.getId() + ":" + x;
-		Fragment myFragment= chartFragList.get(x);
 		if (myFragment != null) {
 			ft = fm.beginTransaction();
 			ft.remove(myFragment);
@@ -533,7 +538,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
         }
     }
     private class ImageThread extends Thread {
-
         public void run(int x){
             Log.e("ImageThread","ImageThread-Chart"+x+"H*W="+height+"*"+width);
             try {

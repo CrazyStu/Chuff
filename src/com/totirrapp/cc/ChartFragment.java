@@ -27,12 +27,12 @@ public class ChartFragment extends Fragment{
     private TextView				timeDoneText		= null;
     private TextView				timeLeftText		= null;
     private TextView				titleBot			= null;
-    private String chartName = "Chart Name Test";
+    private String chartName = "no name";
     private String chartHeader = "I Can't Wait...";
-    private String chartTitle = "StaticTitle";
+    private String chartTitle = "no title";
     private String chartStart = "02/02/2002";
     private String chartEnd = "02/02/2020";
-    private String chartBgUrl = "StaticURL";
+    private String chartBgUrl = "noURL";
     private int screenHeight = 123;
     private int screenWidth = 123;
     private CounterFragment counter;
@@ -55,14 +55,11 @@ public class ChartFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("--Chart Fragment--","onCreateView Called");
 		rootView = inflater.inflate(layout.frag_home, container, false);
-        try {
-            Log.e("screenHeight","=="+screenHeight);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
         setupListeners();
         setupButtons();
-
+        if(chartNo==99){
+            getArgs();
+        }
         call.initiateBG(chartNo);
         return rootView;
 	}
@@ -154,7 +151,13 @@ public class ChartFragment extends Fragment{
         chartBackground.setOnLongClickListener(longPress);
     }
     public void updateChartView(){
-        if(rootView!=null) {
+        if(rootView==null) {
+        try {
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        }
             try {
                 counter.updateCounter();
                 int height = 200;
@@ -187,9 +190,7 @@ public class ChartFragment extends Fragment{
                 Log.d("Update Home View", "update home View failed");
                 e.printStackTrace();
             }
-        }else{
-            Log.e("RootView Error","Root View not setup just yet...?");
-        }
+
     }
     public String getChartName(){
         return chartName;

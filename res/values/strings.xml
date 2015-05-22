@@ -40,5 +40,8 @@
     <string name="delete_chart">Delete This Chart</string>
     <string name="progBlue">Progress Bar Blue</string>
     <string name="progBarRed">Progress Bar Red</string>
+    <string name="newChartText">Name your new chart</string>
+    <string name="create">Create Chart</string>
+    <string name="chartName">chart name</string>
 
 </resources>
