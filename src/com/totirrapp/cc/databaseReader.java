@@ -79,9 +79,16 @@ public class databaseReader {
         db.updateEndDate(chart, url);
         db.close();
     }
+    public static void newChart(String t1,String t2,String t3,String t4,String t5,String t6){
+        db.open("new Chart");
+        db.newChart(t1, t2, t3, t4, t5, t6);
+        db.close();
+
+    }
     public static void deleteChart(String chart){
         db.open("delete chart");
         db.deleteRecord(chart);
         db.close();
+
     }
 }

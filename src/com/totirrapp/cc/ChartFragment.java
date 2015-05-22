@@ -33,18 +33,13 @@ public class ChartFragment extends Fragment{
     private String chartStart = "02/02/2002";
     private String chartEnd = "02/02/2020";
     private String chartBgUrl = "StaticURL";
-//    private int startYear = 2013;
-//    private int startMonth =02;
-//    private int startDay =25;
-//    private int endYear = 2013;
-//    private int endMonth = 7;
-//    private int endDay = 3;
+    private int screenHeight = 123;
+    private int screenWidth = 123;
     private CounterFragment counter;
     private int chartNo = 99;
     private ArrayList<String> values;
-
     public ChartFragment(){
-        Log.d("--Chart Fragment--","ChartFreagment() Called");
+        Log.d("--Chart Fragment--", "ChartFreagment() Called");
     }
     @Override
     public void onAttach(Activity activity) {
@@ -52,7 +47,6 @@ public class ChartFragment extends Fragment{
         super.onAttach(activity);
         try {
             call = (clickCallback) activity;
-
         } catch (ClassCastException e) {
             Log.d("attach test","implementation failed");
             e.printStackTrace();
@@ -62,17 +56,20 @@ public class ChartFragment extends Fragment{
         Log.d("--Chart Fragment--","onCreateView Called");
 		rootView = inflater.inflate(layout.frag_home, container, false);
         try {
-            chartNo = getArguments().getInt("ChartNo", 0);
+            Log.e("screenHeight","=="+screenHeight);
         }catch(Exception e){
             e.printStackTrace();
         }
         setupListeners();
         setupButtons();
+
         call.initiateBG(chartNo);
         return rootView;
 	}
     public void getArgs(){
         chartNo = getArguments().getInt("ChartNo");
+        screenHeight = getArguments().getInt("Height");
+        screenWidth =getArguments().getInt("Width");
         readChartValues();
     }
     public void readChartValues(){
@@ -157,32 +154,41 @@ public class ChartFragment extends Fragment{
         chartBackground.setOnLongClickListener(longPress);
     }
     public void updateChartView(){
-        try {
-            counter.updateCounter();
-            int height = (int)(rootView.getHeight()*((float)counter.getPercentDone()/100));
-            rootView.findViewById(id.progBarBlue).setMinimumHeight(height);
-            rootView.invalidate();
-            if(percent == null){
-                percent = (TextView) rootView.findViewById(R.id.percDoneText);
-                timeDoneText = (TextView) rootView.findViewById(timeDoneTextView);
-                timeLeftText = (TextView) rootView.findViewById(R.id.timeLeftTextView);
-                titleBot = (TextView) rootView.findViewById(R.id.titleBot);
+        if(rootView!=null) {
+            try {
+                counter.updateCounter();
+                int height = 200;
+                try {
+                    height = (int) (screenHeight * ((float) counter.getPercentDone() / 100));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                rootView.findViewById(id.progBarBlue).setMinimumHeight(height);
+                rootView.invalidate();
+                if (percent == null) {
+                    percent = (TextView) rootView.findViewById(R.id.percDoneText);
+                    timeDoneText = (TextView) rootView.findViewById(timeDoneTextView);
+                    timeLeftText = (TextView) rootView.findViewById(R.id.timeLeftTextView);
+                    titleBot = (TextView) rootView.findViewById(R.id.titleBot);
+                }
+                percent.setText(counter.getPercentDone() + "%");
+                if (counter.getDaysTotalDone() > 0) {
+                    timeDoneText.setText(counter.getDaysTotalDone() + " " + getString(R.string.daysDone));
+                } else {
+                    timeDoneText.setText(counter.getHoursTotalDone() + " " + getString(R.string.hoursDone));
+                }
+                if (counter.getDaysTotalLeft() > 0) {
+                    timeLeftText.setText(counter.getDaysTotalLeft() + " " + getString(R.string.daysLeft));
+                } else {
+                    timeLeftText.setText(counter.getHoursTotalLeft() + " " + getString(R.string.hoursLeft));
+                }
+                titleBot.setText(chartTitle);
+            } catch (Exception e) {
+                Log.d("Update Home View", "update home View failed");
+                e.printStackTrace();
             }
-            percent.setText(counter.getPercentDone() + "%");
-            if(counter.getDaysTotalDone()>0){
-                timeDoneText.setText(counter.getDaysTotalDone() + " " + getString(R.string.daysDone));
-            }else{
-                timeDoneText.setText(counter.getHoursTotalDone() + " " + getString(R.string.hoursDone));
-            }
-            if(counter.getDaysTotalLeft()>0){
-                timeLeftText.setText(counter.getDaysTotalLeft() + " " + getString(R.string.daysLeft));
-            }else{
-                timeLeftText.setText(counter.getHoursTotalLeft() + " " + getString(R.string.hoursLeft));
-            }
-            titleBot.setText(chartTitle);
-        } catch (Exception e) {
-            Log.d("Update Home View", "update home View failed");
-            e.printStackTrace();
+        }else{
+            Log.e("RootView Error","Root View not setup just yet...?");
         }
     }
     public String getChartName(){
