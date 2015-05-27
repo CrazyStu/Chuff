@@ -12,27 +12,39 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="0dp"
     android:theme="@android:style/Theme.Holo.Dialog"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:textAlignment="center">
 
-    <Button
+    <TextView
         android:id="@+id/wallpaperButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/useWallpaper" />
+        android:text="@string/useWallpaper"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/activity_default_small_margin" />
 
-    <Button
+    <TextView
         android:id="@+id/galleryButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/chooseGall" />
+        android:text="@string/chooseGall"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:layout_margin="@dimen/activity_default_small_margin" />
 
-    <Button
+    <TextView
         android:id="@+id/delete_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/delete_chart" />
+        android:text="@string/delete_chart"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:layout_margin="@dimen/activity_default_small_margin" />
 
 </LinearLayout>

@@ -43,5 +43,10 @@
     <string name="newChartText">Name your new chart</string>
     <string name="create">Create Chart</string>
     <string name="chartName">chart name</string>
+    <string name="details_frag_percent">86%</string>
+    <string name="dialog_dates_start_date">Start Date</string>
+    <string name="dialog_dates_end_date">End Date</string>
+    <string name="dialog_dates_done_button">Done</string>
+    <string name="dialog_dates_cancel_button">Cancel</string>
 
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/DatePick"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
@@ -13,25 +13,36 @@
     android:paddingTop="0dp"
     android:theme="@android:style/Theme.Dialog" >
 
-    <DatePicker
-        android:id="@+id/datePicker1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:calendarViewShown="false"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:spinnersShown="true" />
-
-    <Button
-        android:id="@+id/dateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <CalendarView
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:id="@+id/dialog_dates_picker_1"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_weight="0"
-        android:longClickable="false"
-        android:text="@string/confirm" />
+        android:showWeekNumber="false" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/dialog_dates_cancel_button"
+            android:id="@+id/dialog_dates_cancel_button"
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/dialog_dates_done_button"
+            android:id="@+id/dialog_dates_done_button"
+            android:layout_weight="1"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -14,13 +14,6 @@ public class databaseReader {
     public databaseReader(String x){
         context = MainActivity.context;
         db = new databaseAdapter(context);
-//        try {
-//            db.open(x);
-//            Log.e("DB open test", "opened database");
-//            db.close();
-//        } catch (SQLException e) {
-//            Log.e("DB open error", "failed to open database");
-//        }
     }
     public static ArrayList getChartInfo(int x, String y){
         Cursor myCursor;
@@ -69,9 +62,9 @@ public class databaseReader {
         db.updateTitle(chart, url);
         db.close();
     }
-    public static void updateStartDate(String chart,String url){
-        db.open("setEndDate");
-        db.updateStartDate(chart, url);
+    public static void updateStartDate(String chart,String start){
+        db.open("setStartDate");
+        db.updateStartDate(chart, start);
         db.close();
     }
     public static void updateEndDate(String chart,String url){
@@ -79,16 +72,20 @@ public class databaseReader {
         db.updateEndDate(chart, url);
         db.close();
     }
+    public static void updateBothDate(String chart,String start,String end){
+        db.open("setBothDates");
+        db.updateStartDate(chart, start);
+        db.updateEndDate(chart, end);
+        db.close();
+    }
     public static void newChart(String t1,String t2,String t3,String t4,String t5,String t6){
         db.open("new Chart");
         db.newChart(t1, t2, t3, t4, t5, t6);
         db.close();
-
     }
     public static void deleteChart(String chart){
         db.open("delete chart");
         db.deleteRecord(chart);
         db.close();
-
     }
 }

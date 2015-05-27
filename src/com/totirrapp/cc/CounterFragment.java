@@ -143,6 +143,12 @@ public class CounterFragment {
             String x = endDay +"/"+(1+ endMonth)+"/"+ endYear;
             return x;
         }
+    public long getCalStartMills(){
+        return calStart.getTimeInMillis();
+    }
+    public long getCalEndMills(){
+        return calTarget.getTimeInMillis();
+    }
         public int getDaysTotalLeft(){
             return daysTotalLeft;
         }

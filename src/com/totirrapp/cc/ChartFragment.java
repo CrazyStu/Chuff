@@ -83,7 +83,6 @@ public class ChartFragment extends Fragment{
             chartStart = values.get(3);
             chartEnd = values.get(4);
             chartBgUrl = values.get(5);
-
             counter = new CounterFragment(chartStart,chartEnd);
         }
     }
@@ -210,4 +209,11 @@ public class ChartFragment extends Fragment{
     public String getChartBgUrl(){
         return chartBgUrl;
     }
+    public Long getCounterStartMills(){
+        return counter.getCalStartMills();
+    }
+    public Long getCounterEndMills(){
+        return counter.getCalEndMills();
+    }
+
 }

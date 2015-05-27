@@ -29,13 +29,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.DatePicker;
+import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Locale;
 
 public class MainActivity extends FragmentActivity implements ChartFragment.clickCallback, NewFragment.newChartCallback{
@@ -49,6 +48,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private Bitmap					bg1;
 	private int screenHMem;
 	private int screenWMem;
+	String newStartDate;
+	String newEndDate;
 	private String 					tempTitle = null;
 	private FragmentManager 		fm = this.getSupportFragmentManager();
 	private ArrayList<ChartFragment> chartFragList = new ArrayList<ChartFragment>();
@@ -152,7 +153,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		submitChart.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				int x = mViewPager.getCurrentItem();
-				String t1 =  newTitle.getText().toString();
+				String t1 = newTitle.getText().toString();
 				String t2 = "I can't wait...";
 				String t3 = "for what?";
 				String t4 = "01/01/2015";
@@ -168,84 +169,81 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			}
 		});
     }
-	private void myDateDialog(boolean start){
-		int y = mViewPager.getCurrentItem();
-		final Dialog setDate = new Dialog(this);
-		setDate.setContentView(R.layout.dialog_dates);
-		setDate.show();
 
-		String[] DateInts;
-		OnClickListener test;
-		final DatePicker picker1 = (DatePicker) setDate.findViewById(R.id.datePicker1);
-		if (start) {
-			setDate.setTitle("Set Start Date");
-			DateInts = chartFragList.get(y).getChartStart().split("/");
-			test = new View.OnClickListener() {
-				public void onClick(View view){
-					//----check date validity
-					int x = mViewPager.getCurrentItem();
-					String[] EndDate=chartFragList.get(x).getChartEnd().split("/");
-					int Eday = Integer.parseInt(EndDate[0]);
-					int Emonth = Integer.parseInt(EndDate[1])-1;
-					int Eyear = Integer.parseInt(EndDate[2]);
-					int Sday = picker1.getDayOfMonth();
-					int Smonth = picker1.getMonth();
-					int Syear = picker1.getYear();
-					Locale home = new Locale("en");
-					Calendar calStart = Calendar.getInstance(home);
-					Calendar calEnd = Calendar.getInstance(home);
-					calStart.set(Syear,Smonth,Sday,0,0,0);
-					calEnd.set(Eyear,Emonth,Eday,0,0,0);
-					if(calStart.getTimeInMillis()>calEnd.getTimeInMillis()){
-						String end = Sday + "/" + (Smonth+1) + "/" + Syear;
-						databaseReader.updateEndDate(chartFragList.get(x).getChartName(), end);
-						Toast.makeText(getBaseContext(), "End date moved",Toast.LENGTH_SHORT).show();
-					}
-					String start  = Sday + "/" + (Smonth+1) + "/" + Syear;
-					databaseReader.updateStartDate(chartFragList.get(x).getChartName(), start);
-					chartFragList.get(x).readChartValues();
-					setDate.dismiss();
+	private void myDateDialog(final boolean start){
+		int x = mViewPager.getCurrentItem();
+		final ChartFragment tempChart = chartFragList.get(x);
+		final Dialog setDateDialog = new Dialog(this);
+		setDateDialog.setContentView(R.layout.dialog_dates);
+		newStartDate = null;
+		newEndDate = null;
+		OnClickListener doneListener;
+		OnClickListener cancelListener;
+		CalendarView.OnDateChangeListener datePicked;
+		final Long startDateMills =tempChart.getCounterStartMills();
+		final Long endDateMills =tempChart.getCounterEndMills();
+		final CalendarView picker1 = (CalendarView) setDateDialog.findViewById(R.id.dialog_dates_picker_1);
+		TextView doneButton = (TextView) setDateDialog.findViewById(R.id.dialog_dates_done_button);
+		TextView cancelButton = (TextView) setDateDialog.findViewById(R.id.dialog_dates_cancel_button);
+		cancelListener = new View.OnClickListener() {
+			public void onClick(View view){
+				setDateDialog.dismiss();
+			}
+		};
+
+		if(start) {
+			setDateDialog.setTitle("Set Start Date");
+			datePicked = new CalendarView.OnDateChangeListener() {
+				@Override
+				public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+					Log.i("View selected", "Picker>" + view);
+					newStartDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+					if(picker1.getDate()>endDateMills){
+						newEndDate =  (dayOfMonth+1) + "/" + (month + 1) + "/" + year;
+					};
 				}
 			};
-		} else {
-			setDate.setTitle("Set End Date");
-			DateInts = chartFragList.get(y).getChartEnd().split("/");
-			test = new View.OnClickListener() {
+			doneListener = new View.OnClickListener() {
 				public void onClick(View view){
-					//----Check date validity
-					int x = mViewPager.getCurrentItem();
-					String[] StartDate= chartFragList.get(x).getChartStart().split("/");
-					int Sday = Integer.parseInt(StartDate[0]);
-					int Smonth = Integer.parseInt(StartDate[1])-1;
-					int Syear = Integer.parseInt(StartDate[2]);
-					int Eday = picker1.getDayOfMonth();
-					int Emonth = picker1.getMonth();
-					int Eyear = picker1.getYear();
-					Locale home = new Locale("en");
-					Calendar calStart = Calendar.getInstance(home);
-					Calendar calEnd = Calendar.getInstance(home);
-					calStart.set(Syear, Smonth, Sday, 0, 0, 0);
-					calEnd.set(Eyear,Emonth,Eday,0,0,0);
-					String end;
-					if(calStart.getTimeInMillis()>calEnd.getTimeInMillis()){
-						end = Sday + "/" + (Smonth+1) + "/" + Syear;
-						Toast.makeText(getBaseContext(), "Flux capacitor malfunction!",Toast.LENGTH_SHORT).show();
+					setDateDialog.dismiss();
+					if(newEndDate!=null){
+						databaseReader.updateBothDate(tempChart.getChartName(), newStartDate, newEndDate);
 					}else{
-						end = Eday + "/" + (Emonth+ 1) + "/" + Eyear;
+						databaseReader.updateStartDate(tempChart.getChartName(), newStartDate);
 					}
-					databaseReader.updateEndDate(chartFragList.get(x).getChartName(), end);
-					chartFragList.get(x).readChartValues();
-					setDate.dismiss();
+					tempChart.readChartValues();
 				}
 			};
+			picker1.setDate(startDateMills, true, true);
+		}else {
+			setDateDialog.setTitle("Set End Date");
+			datePicked = new CalendarView.OnDateChangeListener() {
+				@Override
+				public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+					Log.i("View selected", "Picker>" + view);
+					newEndDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+					if(picker1.getDate()<startDateMills){
+						newStartDate =  (dayOfMonth-1) + "/" + (month + 1) + "/" + year;
+					};
+				}
+			};
+			doneListener = new View.OnClickListener() {
+				public void onClick(View view){
+					setDateDialog.dismiss();
+					if(newStartDate!=null){
+						databaseReader.updateBothDate(tempChart.getChartName(), newStartDate, newEndDate);
+					}else{
+						databaseReader.updateEndDate(tempChart.getChartName(), newEndDate);
+					}
+					tempChart.readChartValues();
+				}
+			};
+			picker1.setDate(endDateMills, true, true);
 		}
-
-		int iday = Integer.parseInt(DateInts[0]);
-		int imonth = (Integer.parseInt(DateInts[1]) - 1);
-		int iyear = Integer.parseInt(DateInts[2]);
-		picker1.init(iyear, imonth, iday, null);
-		Button submitDate = (Button) setDate.findViewById(R.id.dateButton);
-		submitDate.setOnClickListener(test);
+		picker1.setOnDateChangeListener(datePicked);
+		doneButton.setOnClickListener(doneListener);
+		cancelButton.setOnClickListener(cancelListener);
+		setDateDialog.show();
 	}
 	private void myTitleDialog(){
 		final Dialog setTitle = new Dialog(this);
@@ -277,7 +275,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		setBG.setTitle("Set background for " + tempTitle);
 
 		setBG.show();
-		Button wallpaperButton = (Button) setBG.findViewById(R.id.wallpaperButton);
+		TextView wallpaperButton = (TextView) setBG.findViewById(R.id.wallpaperButton);
 		wallpaperButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				setBG.dismiss();
@@ -287,14 +285,14 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				useWallpaper(mViewPager.getCurrentItem());
 			}
 		});
-		Button galleryButton = (Button) setBG.findViewById(R.id.galleryButton);
+		TextView galleryButton = (TextView) setBG.findViewById(R.id.galleryButton);
         galleryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
                 setBG.dismiss();
                 choosePic();
             }
         });
-        Button deleteButton = (Button) setBG.findViewById(R.id.delete_button);
+		TextView deleteButton = (TextView) setBG.findViewById(R.id.delete_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				int x = mViewPager.getCurrentItem();
@@ -433,8 +431,6 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private void useWallpaper(int chartNo){
 			chartFragList.get(chartNo-1).removeBackground();
 	}
-
-
 	public void updateHomeView(){
 		int num = mViewPager.getCurrentItem();
 		Log.e(">>UpdateChart<<", "FragID="+num+",Frag="+chartFragList.get(num)+"Background="+chartFragList.get(mViewPager.getCurrentItem()).getChartBgUrl());
