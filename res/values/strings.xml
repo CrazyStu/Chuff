@@ -53,5 +53,6 @@
     <string name="details_activity_days_done">Days</string>
     <string name="details_activity_hours_done">Hours</string>
     <string name="details_activity_completed_text">Completed</string>
+    <string name="details_activity_minutes_done">Minutes</string>
 
 </resources>

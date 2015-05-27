@@ -39,7 +39,7 @@ public class ChartFragment extends Fragment{
     private int chartNo = 99;
     private ArrayList<String> values;
     public ChartFragment(){
-        Log.d("--Chart Fragment--", "ChartFreagment() Called");
+        Log.d("--Chart Fragment--", "ChartFragment() Called");
     }
     @Override
     public void onAttach(Activity activity) {
@@ -53,7 +53,7 @@ public class ChartFragment extends Fragment{
         }
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("--Chart Fragment--","onCreateView Called");
+        Log.d("--Chart Fragment--","onCreateView Called-chart"+chartNo);
 		rootView = inflater.inflate(layout.frag_home, container, false);
         setupListeners();
         setupButtons();
@@ -70,6 +70,7 @@ public class ChartFragment extends Fragment{
         readChartValues();
     }
     public void readChartValues(){
+        Log.d("--Chart Fragment--","readChart Values Called");
         String y = "Chart"+chartNo+">ReadChart()";
         try{
             values = databaseReader.getChartInfo(chartNo,y);

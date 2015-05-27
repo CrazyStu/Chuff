@@ -224,7 +224,7 @@ public class CounterFragment {
         return minsLeft;
     }
 
-    public long getMinsDone() {
+    public int getMinsDone() {
         return minsDone;
     }
 
@@ -232,7 +232,7 @@ public class CounterFragment {
         return secsLeft;
     }
 
-    public long getSecsDone() {
+    public int getSecsDone() {
         return secsDone;
     }
 

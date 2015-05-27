@@ -24,6 +24,7 @@ public class DetailsActivity extends Activity {
     private ProgressBar weekProgress;
     private ProgressBar dayProgress;
     private ProgressBar hourProgress;
+    private ProgressBar minuteProgress;
 
     private TextView targetDate;
     private TextView percent;
@@ -31,6 +32,7 @@ public class DetailsActivity extends Activity {
     private TextView weekCount;
     private TextView dayCount;
     private TextView hourCount;
+    private TextView minuteCount;
     private int mProgressStatus = 0;
 
 
@@ -82,11 +84,13 @@ public class DetailsActivity extends Activity {
         weekCount = (TextView) findViewById(R.id.details_activity_weeks_count);
         dayCount = (TextView) findViewById(R.id.details_activity_days_count);
         hourCount = (TextView) findViewById(R.id.details_activity_hours_count);
+        minuteCount = (TextView) findViewById(R.id.details_activity_minutes_count);
 
         monthProgress = (ProgressBar) findViewById(R.id.details_activity_progress_months);
         weekProgress = (ProgressBar) findViewById(R.id.details_activity_progress_weeks);
         dayProgress = (ProgressBar) findViewById(R.id.details_activity_progress_days);
         hourProgress = (ProgressBar) findViewById(R.id.details_activity_progress_hours);
+        minuteProgress = (ProgressBar) findViewById(R.id.details_activity_progress_minutes);
     }
 
     public void updateDetailsView() {
@@ -97,6 +101,7 @@ public class DetailsActivity extends Activity {
         weekCount.setText(Integer.toString(counter.getWeeksDone()));
         dayCount.setText(Integer.toString(counter.getDaysDone()));
         hourCount.setText(Integer.toString(counter.getHoursDone()));
+        minuteCount.setText(Integer.toString(counter.getMinsDone()));
 
     }
 
@@ -112,10 +117,11 @@ public class DetailsActivity extends Activity {
                         }
                     });
                     mProgressStatus++;
-                            monthProgress.setProgress(mProgressStatus);
-                    weekProgress.setProgress(mProgressStatus);
-                    dayProgress.setProgress(mProgressStatus);
-                    hourProgress.setProgress(mProgressStatus);
+                            monthProgress.setProgress((int)((float)counter.getMonthsDone()/4*100));
+                    weekProgress.setProgress((int)((float)counter.getDaysDone()/7*100));
+                    dayProgress.setProgress((int) ((float)counter.getHoursDone() / 24*100));
+                    hourProgress.setProgress((int) ((float)counter.getMinsDone()/60*100));
+                    minuteProgress.setProgress((int) ((float)counter.getSecsDone()/60*100));
                     sleep(1000);
                 } catch (Exception e) {
                     e.printStackTrace();
