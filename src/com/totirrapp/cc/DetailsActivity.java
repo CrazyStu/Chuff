@@ -5,81 +5,66 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class DetailsActivity extends Activity {
-    private boolean					running				= true;
-    private detailsThread			MT;
-    private String chartName = "Chart Name Test";
-    private String chartHeader = "I Can't Wait...";
-    private String chartTitle = "StaticTitle";
+    private boolean running = true;
+    private detailsThread MT;
     private String chartStart = "02/02/2002";
     private String chartEnd = "02/02/2020";
-    private String chartBgUrl = "StaticURL";
     private CounterFragment counter;
     private ArrayList<String> values;
     private int chartNo = 99;
-    private TextView startD;
-    private TextView endD;
+//
+//    private static final int PROGRESS = 0x1;
+    private ProgressBar monthProgress;
+    private ProgressBar weekProgress;
+    private ProgressBar dayProgress;
+    private ProgressBar hourProgress;
 
-    private TextView num106;
-    private TextView num105;
-    private TextView num104;
-    private TextView num103;
-    private  TextView num102;
-    private  TextView num101;
+    private TextView targetDate;
+    private TextView percent;
+    private TextView monthCount;
+    private TextView weekCount;
+    private TextView dayCount;
+    private TextView hourCount;
+    private int mProgressStatus = 0;
 
-    private TextView num160;
-    private TextView num150;
-    private TextView num140;
-    private    TextView num130;
-    private   TextView num120;
-    private   TextView num110;
-
-    private   TextView num206;
-    private   TextView num205;
-    private  TextView num204;
-    private TextView num203;
-    private  TextView num202;
-    private   TextView num201;
-
-    private   TextView num210;
-    private   TextView num220;
-    private   TextView num230;
-    private  TextView num240;
-    private   TextView num250;
-    private  TextView num260;
 
     public DetailsActivity() {
 //        counter = new CounterFragment();
     }
-    protected void onCreate(Bundle savedInstanceState){
+
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             chartStart = getIntent().getExtras().getString("start");
             chartEnd = getIntent().getExtras().getString("end");
-            Log.e("gotExtras?","start#end "+chartStart+"#"+chartEnd);
-            counter = new CounterFragment(chartStart,chartEnd);
-//            readChartValues();
-        }catch(Exception e){
+            Log.e("gotExtras?", "start#end " + chartStart + "#" + chartEnd);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.frag_details);
+        setTheme(R.style.lightTheme);
+        setContentView(R.layout.details_activity_test);
         setupView();
+
     }
-    protected void onPause(){
+
+    protected void onPause() {
         super.onPause();
         running = false;
-        Log.e("MT State", MT.getState() + "");
+        Log.e("DetailsTread State", MT.getState() + "");
     }
-    protected void onResume(){
+
+    protected void onResume() {
         super.onResume();
         running = true;
-        // Log.e("MT State", MT.getState()+"");
         try {
             MT = null;
             MT = new detailsThread();
@@ -88,111 +73,56 @@ public class DetailsActivity extends Activity {
             e.printStackTrace();
         }
     }
-    public void readChartValues(){
-        String y = "Chart"+chartNo+">ReadChart()";
-        try{
-            values = databaseReader.getChartInfo(chartNo,y);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-        if (values!=null) {
-            chartName = values.get(0);
-            chartHeader = values.get(1);
-            chartTitle = values.get(2);
-            chartStart = values.get(3);
-            chartEnd = values.get(4);
-            chartBgUrl = values.get(5);
-//
-//            String[] StartDate = chartStart.split("/");
-//            startDay = Integer.parseInt(StartDate[0]);
-//            startMonth = Integer.parseInt(StartDate[1]) - 1;
-//            startYear = Integer.parseInt(StartDate[2]);
-//
-//            String[] EndDate = chartEnd.split("/");
-//            endDay = Integer.parseInt(EndDate[0]);
-//            endMonth = Integer.parseInt(EndDate[1]) - 1;
-//            endYear = Integer.parseInt(EndDate[2]);
-        }
+
+    public void setupView() {
+        counter = new CounterFragment(chartStart, chartEnd);
+        targetDate = (TextView) findViewById(R.id.details_activity_target_date);
+        percent = (TextView) findViewById(R.id.details_activity_percentage);
+        monthCount = (TextView) findViewById(R.id.details_activity_months_count);
+        weekCount = (TextView) findViewById(R.id.details_activity_weeks_count);
+        dayCount = (TextView) findViewById(R.id.details_activity_days_count);
+        hourCount = (TextView) findViewById(R.id.details_activity_hours_count);
+
+        monthProgress = (ProgressBar) findViewById(R.id.details_activity_progress_months);
+        weekProgress = (ProgressBar) findViewById(R.id.details_activity_progress_weeks);
+        dayProgress = (ProgressBar) findViewById(R.id.details_activity_progress_days);
+        hourProgress = (ProgressBar) findViewById(R.id.details_activity_progress_hours);
     }
-    public void setupView(){
-        startD = (TextView) findViewById(R.id.startDate);
-        endD = (TextView) findViewById(R.id.endDate);
 
-        num106 = (TextView) findViewById(R.id.monthsDoneT);
-        num105 = (TextView) findViewById(R.id.weeksDoneT);
-        num104 = (TextView) findViewById(R.id.daysDoneT);
-        num103 = (TextView) findViewById(R.id.hoursDoneT);
-        num102 = (TextView) findViewById(R.id.minsDoneT);
-        num101 = (TextView) findViewById(R.id.secsDoneT);
-
-        num160 = (TextView) findViewById(R.id.monthsDone);
-        num150 = (TextView) findViewById(R.id.weeksDone);
-        num140 = (TextView) findViewById(R.id.daysDone);
-        num130 = (TextView) findViewById(R.id.hoursDone);
-        num120 = (TextView) findViewById(R.id.minsDone);
-        num110 = (TextView) findViewById(R.id.secsDone);
-
-        num206 = (TextView) findViewById(R.id.monthsLeftT);
-        num205 = (TextView) findViewById(R.id.weeksLeftT);
-        num204 = (TextView) findViewById(R.id.daysLeftT);
-        num203 = (TextView) findViewById(R.id.hoursLeftT);
-        num202 = (TextView) findViewById(R.id.minsLeftT);
-        num201 = (TextView) findViewById(R.id.secsLeftT);
-
-        num210 = (TextView) findViewById(R.id.secsLeft);
-        num220 = (TextView) findViewById(R.id.minsLeft);
-        num230 = (TextView) findViewById(R.id.hoursLeft);
-        num240 = (TextView) findViewById(R.id.daysLeft);
-        num250 = (TextView) findViewById(R.id.weeksLeft);
-        num260 = (TextView) findViewById(R.id.monthsLeft);
-    }
-    public void updateDetailsView(){
+    public void updateDetailsView() {
         Log.i("detailsFrag", "updateDetailsView()");
-        startD.setText("Start: " + chartStart);
-        endD.setText("End: " + chartEnd);
-
-        num101.setText(String.format("%,d", counter.getSecsTotalDone()));
-        num102.setText(String.format("%,d", counter.getMinsTotalDone()));
-        num103.setText(String.format("%,d", counter.getHoursTotalDone()));
-        num104.setText(String.format("%,d", counter.getDaysTotalDone()));
-        num105.setText(String.format("%,d", counter.getWeeksTotalDone()));
-        num106.setText(String.format("%,d", counter.getMonthsTotalDone()));
-
-        num110.setText("" + counter.getSecsDone());
-        num120.setText("" + counter.getMinsDone());
-        num130.setText("" + counter.getHoursDone());
-        num140.setText("" + counter.getDaysDone());
-        num150.setText("" + counter.getWeeksDone());
-        num160.setText("" + counter.getMonthsDone());
-
-        num201.setText(String.format("%,d", counter.getSecsTotalLeft()));
-        num202.setText(String.format("%,d", counter.getMinsTotalLeft()));
-        num203.setText(String.format("%,d", counter.getHoursTotalLeft()));
-        num204.setText(String.format("%,d", counter.getDaysTotalLeft()));
-        num205.setText(String.format("%,d", counter.getWeeksTotalLeft()));
-        num206.setText(String.format("%,d", counter.getMonthsTotalLeft()));
-
-        num210.setText("" + counter.getSecsLeft());
-        num220.setText("" + counter.getMinsLeft());
-        num230.setText("" + counter.getHoursLeft());
-        num240.setText("" + counter.getDaysLeft());
-        num250.setText(counter.getWeeksLeft() + "");
-        num260.setText(counter.getMonthsLeft() + "");
+        targetDate.setText(chartEnd);
+        percent.setText(counter.getPercentDone() + "%");
+        monthCount.setText(Integer.toString(counter.getMonthsDone()));
+        weekCount.setText(Integer.toString(counter.getWeeksDone()));
+        dayCount.setText(Integer.toString(counter.getDaysDone()));
+        hourCount.setText(Integer.toString(counter.getHoursDone()));
 
     }
+
     private class detailsThread extends Thread {
-        public void run(){
+        public void run() {
             Log.e("MT State", MT.getState() + "");
             while (running) {
                 try {
-                        counter.updateCounter();
-                    runOnUiThread(new Runnable() {public void run(){updateDetailsView();}});
-                } catch (Exception e) {e.printStackTrace();}
-                try {
+                    counter.updateCounter();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            updateDetailsView();
+                        }
+                    });
+                    mProgressStatus++;
+                            monthProgress.setProgress(mProgressStatus);
+                    weekProgress.setProgress(mProgressStatus);
+                    dayProgress.setProgress(mProgressStatus);
+                    hourProgress.setProgress(mProgressStatus);
                     sleep(1000);
-                } catch (Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            Log.e("MT State", MT.getState() +"stopped");
+            Log.e("MT State", MT.getState() + "stopped");
         }
     }
+
 }

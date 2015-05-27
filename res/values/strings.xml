@@ -48,5 +48,10 @@
     <string name="dialog_dates_end_date">End Date</string>
     <string name="dialog_dates_done_button">Done</string>
     <string name="dialog_dates_cancel_button">Cancel</string>
+    <string name="details_activity_months_done">Months</string>
+    <string name="details_activity_weeks_done">Weeks</string>
+    <string name="details_activity_days_done">Days</string>
+    <string name="details_activity_hours_done">Hours</string>
+    <string name="details_activity_completed_text">Completed</string>
 
 </resources>

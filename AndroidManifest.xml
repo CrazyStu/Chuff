@@ -30,7 +30,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.totirrapp.cc.DetailsActivity"
+            android:name=".DetailsActivityOld"
+            android:label="Chuff Chart Details"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailsActivity"
             android:label="Chuff Chart Details"
             android:screenOrientation="portrait" />
     </application>

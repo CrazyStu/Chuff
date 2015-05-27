@@ -149,7 +149,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		final EditText newTitle = (EditText) newChartDialog.findViewById(R.id.setNewTitle);
 		newTitle.setText(R.string.chartName);
 		newChartDialog.show();
-		Button submitChart = (Button) newChartDialog.findViewById(R.id.button2);
+		TextView submitChart = (TextView) newChartDialog.findViewById(R.id.button2);
 		submitChart.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				int x = mViewPager.getCurrentItem();
