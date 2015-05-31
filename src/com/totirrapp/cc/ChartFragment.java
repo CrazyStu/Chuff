@@ -18,15 +18,15 @@ import static com.totirrapp.cc.R.id.timeDoneTextView;
 import static com.totirrapp.cc.R.layout;
 
 
-public class ChartFragment extends Fragment{
-	public View rootView;
+public class ChartFragment extends Fragment {
+    public View rootView;
     private clickCallback call;
     private View.OnClickListener shortPress;
     private View.OnLongClickListener longPress;
-    private TextView				percent				= null;
-    private TextView				timeDoneText		= null;
-    private TextView				timeLeftText		= null;
-    private TextView				titleBot			= null;
+    private TextView percent = null;
+    private TextView timeDoneText = null;
+    private TextView timeLeftText = null;
+    private TextView titleBot = null;
     private String chartName = "no name";
     private String chartHeader = "I Can't Wait...";
     private String chartTitle = "no title";
@@ -38,93 +38,117 @@ public class ChartFragment extends Fragment{
     private CounterFragment counter;
     private int chartNo = 99;
     private ArrayList<String> values;
-    public ChartFragment(){
+
+    public ChartFragment() {
         Log.d("--Chart Fragment--", "ChartFragment() Called");
     }
+
     @Override
     public void onAttach(Activity activity) {
-        Log.d("--Chart Fragment--","onAttach Called");
+        Log.d("--Chart Fragment--", "onAttach Called");
         super.onAttach(activity);
         try {
             call = (clickCallback) activity;
         } catch (ClassCastException e) {
-            Log.d("attach test","implementation failed");
+            Log.d("attach test", "implementation failed");
             e.printStackTrace();
         }
     }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("--Chart Fragment--","onCreateView Called-chart"+chartNo);
-		rootView = inflater.inflate(layout.frag_home, container, false);
+        Log.d("--Chart Fragment--", "onCreateView Called-chart" + chartNo);
+        rootView = inflater.inflate(layout.frag_home, container, false);
+        Log.d("--Chart Fragment--", "onCreateView rootView=" + rootView.getId());
         setupListeners();
         setupButtons();
-        if(chartNo==99){
+        if (chartNo == 99) {
             getArgs();
         }
         call.initiateBG(chartNo);
         return rootView;
-	}
-    public void getArgs(){
+    }
+public void onResume(){
+    super.onResume();
+    Log.d("--Chart Fragment--", "onResume Called-chart" + chartNo);
+}
+    public void onPause() {
+        super.onPause();
+        Log.d("--Chart Fragment--", "onPause Called-chart" + chartNo);
+    }
+public void onStart(){
+    super.onStart();
+    Log.d("--Chart Fragment--", "onStart Called-chart" + chartNo);
+}
+    public void getArgs() {
         chartNo = getArguments().getInt("ChartNo");
         screenHeight = getArguments().getInt("Height");
-        screenWidth =getArguments().getInt("Width");
+        screenWidth = getArguments().getInt("Width");
         readChartValues();
     }
-    public void readChartValues(){
-        Log.d("--Chart Fragment--","readChart Values Called");
-        String y = "Chart"+chartNo+">ReadChart()";
-        try{
-            values = databaseReader.getChartInfo(chartNo,y);
-        }catch (NullPointerException e){
+
+    public void readChartValues() {
+        Log.d("--Chart Fragment--", "readChart Values Called");
+        String y = "Chart" + chartNo + ">ReadChart()";
+        try {
+            values = databaseReader.getChartInfo(chartNo, y);
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        if (values!=null) {
+        if (values != null) {
             chartName = values.get(0);
             chartHeader = values.get(1);
             chartTitle = values.get(2);
             chartStart = values.get(3);
             chartEnd = values.get(4);
             chartBgUrl = values.get(5);
-            counter = new CounterFragment(chartStart,chartEnd);
+            counter = new CounterFragment(chartStart, chartEnd);
         }
     }
-    public void setNewBackground(BitmapDrawable bmp){
-         try{
-             rootView.setBackground(bmp);
-         }catch(Exception e){
-             e.printStackTrace();
-         }
-     }
-    public void removeBackground(){
-        try{
-            rootView.setBackground(null);
-            rootView.setBackgroundColor(Color.TRANSPARENT);
-        }catch(Exception e){
+
+    public void setNewBackground(BitmapDrawable bmp) {
+        try {
+            rootView.setBackground(bmp);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    public void removeBackground() {
+        try {
+            rootView.setBackground(null);
+            rootView.setBackgroundColor(Color.TRANSPARENT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public interface clickCallback {
         void onShortPress(int v);
+
         void onLongPress(int v);
+
         void initiateBG(int x);
     }
-    public void setupListeners(){
-        shortPress= new View.OnClickListener() {
-            public void onClick(View v){
-               Log.e("shortPress", "viewID =" + v.getId());
+
+    public void setupListeners() {
+        shortPress = new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.e("shortPress", "viewID =" + v.getId());
                 call.onShortPress(v.getId());
 //                v.setVisibility(View.VISIBLE);
             }
         };
         longPress = new View.OnLongClickListener() {
-            public boolean onLongClick(View v){
-                Log.e("LOOOONGPress","viewID ="+v.getId());
+            public boolean onLongClick(View v) {
+                Log.e("LOOOONGPress", "viewID =" + v.getId());
                 call.onLongPress(v.getId());
 //                v.setVisibility(View.INVISIBLE);
                 return true;
             }
         };
     }
-    public void setupButtons(){
+
+    public void setupButtons() {
         View timeDoneButton;
         timeDoneButton = this.rootView.findViewById(id.timeDoneTextView);
         timeDoneButton.setOnClickListener(shortPress);
@@ -150,70 +174,79 @@ public class ChartFragment extends Fragment{
         chartBackground.setOnClickListener(shortPress);
         chartBackground.setOnLongClickListener(longPress);
     }
-    public void updateChartView(){
-        if(rootView==null) {
-        try {
 
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        }
+    public void updateChartView() {
+        if (rootView == null) {
             try {
-                counter.updateCounter();
-                int height = 200;
-                try {
-                    height = (int) (screenHeight * ((float) counter.getPercentDone() / 100));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                rootView.findViewById(id.progBarBlue).setMinimumHeight(height);
-                rootView.invalidate();
-                if (percent == null) {
-                    percent = (TextView) rootView.findViewById(R.id.percDoneText);
-                    timeDoneText = (TextView) rootView.findViewById(timeDoneTextView);
-                    timeLeftText = (TextView) rootView.findViewById(R.id.timeLeftTextView);
-                    titleBot = (TextView) rootView.findViewById(R.id.titleBot);
-                }
-                percent.setText(counter.getPercentDone() + "%");
-                if (counter.getDaysTotalDone() > 0) {
-                    timeDoneText.setText(counter.getDaysTotalDone() + " " + getString(R.string.daysDone));
-                } else {
-                    timeDoneText.setText(counter.getHoursTotalDone() + " " + getString(R.string.hoursDone));
-                }
-                if (counter.getDaysTotalLeft() > 0) {
-                    timeLeftText.setText(counter.getDaysTotalLeft() + " " + getString(R.string.daysLeft));
-                } else {
-                    timeLeftText.setText(counter.getHoursTotalLeft() + " " + getString(R.string.hoursLeft));
-                }
-                titleBot.setText(chartTitle);
+
             } catch (Exception e) {
-                Log.d("Update Home View", "update home View failed");
                 e.printStackTrace();
             }
+        }
+        try {
+            counter.updateCounter();
+            int height = 200;
+            try {
+                height = (int) (screenHeight * ((float) counter.getPercentDone() / 100));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            rootView.findViewById(id.progBarBlue).setMinimumHeight(height);
+            rootView.invalidate();
+            if (percent == null) {
+                percent = (TextView) rootView.findViewById(R.id.percDoneText);
+                timeDoneText = (TextView) rootView.findViewById(timeDoneTextView);
+                timeLeftText = (TextView) rootView.findViewById(R.id.timeLeftTextView);
+                titleBot = (TextView) rootView.findViewById(R.id.titleBot);
+            }
+            percent.setText(counter.getPercentDone() + "%");
+            if (counter.getDaysTotalDone() > 0) {
+                timeDoneText.setText(counter.getDaysTotalDone() + " " + getString(R.string.daysDone));
+            } else {
+                timeDoneText.setText(counter.getHoursTotalDone() + " " + getString(R.string.hoursDone));
+            }
+            if (counter.getDaysTotalLeft() > 0) {
+                timeLeftText.setText(counter.getDaysTotalLeft() + " " + getString(R.string.daysLeft));
+            } else {
+                timeLeftText.setText(counter.getHoursTotalLeft() + " " + getString(R.string.hoursLeft));
+            }
+            titleBot.setText(chartTitle);
+        } catch (Exception e) {
+            Log.d("Update Home View", "update home View failed");
+            e.printStackTrace();
+        }
 
     }
-    public String getChartName(){
+
+    public String getChartName() {
         return chartName;
     }
-    public String getChartHeader(){
+
+    public String getChartHeader() {
         return chartHeader;
     }
-    public String getChartTitle(){
+
+    public String getChartTitle() {
         return chartTitle;
     }
-    public String getChartStart(){
+
+    public String getChartStart() {
         return chartStart;
     }
-    public String getChartEnd(){
+
+    public String getChartEnd() {
         return chartEnd;
     }
-    public String getChartBgUrl(){
+
+    public String getChartBgUrl() {
         return chartBgUrl;
     }
-    public Long getCounterStartMills(){
+
+    public Long getCounterStartMills() {
         return counter.getCalStartMills();
     }
-    public Long getCounterEndMills(){
+
+    public Long getCounterEndMills() {
         return counter.getCalEndMills();
     }
 

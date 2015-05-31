@@ -43,7 +43,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	private static int				RESULT_LOAD_IMAGE	= 1;
 	private ViewPager				mViewPager;
 	private String					noImage				= "noImage";
-	private boolean					running				= true;
+	private boolean					running				= false;
 	private detailsThread			MT;
 	private Bitmap					bg1;
 	private int screenHMem;
@@ -85,8 +85,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 	}
 	protected void onResume(){
 		super.onResume();
-//initCharts();
-		running = true;
+			running = true;
 		try {
 //			if(MT==null){
 //				MT = new detailsThread();
@@ -162,6 +161,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 				try {
 					databaseReader.newChart(t1, t2, t3, t4, t5, t6);
 					removePage(x, null);
+
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
