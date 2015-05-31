@@ -16,7 +16,6 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -24,9 +23,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -35,7 +31,6 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class MainActivity extends FragmentActivity implements ChartFragment.clickCallback, NewFragment.newChartCallback{
 	public static Context			context;
@@ -63,20 +58,20 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 //		db = new databaseAdapter(context);
 		new databaseReader("Activity Create");
 
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
-		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+//		SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
 		width = size.x;
 		height = size.y;
 		initCharts();
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
-		mViewPager.setCurrentItem(1);
-		mViewPager.setPageMargin(0);
+//		mViewPager = (ViewPager) findViewById(R.id.pager);
+//		mViewPager.setAdapter(mSectionsPagerAdapter);
+//		mViewPager.setCurrentItem(1);
+//		mViewPager.setPageMargin(0);
 	}
 	protected void onPause(){
 		super.onPause();
@@ -141,7 +136,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
         ImageThread testMe = new ImageThread();
         testMe.run(x);
     }
-    public void newChartRequest(int v){
+
+	public void newChartRequest(int v){
 		final Dialog newChartDialog = new Dialog(this);
 		newChartDialog.setContentView(R.layout.dialog_new);
 		newChartDialog.setTitle(R.string.newChartText);
@@ -463,54 +459,8 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 		}
 		mViewPager.getAdapter().notifyDataSetChanged();
 	}
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
-		public SectionsPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-		@Override
-		public Fragment getItem(int position){
-			if (position == 0) {
-//                HelpFragment helpFrag = new HelpFragment();
-//				Log.i("Get Item","num="+position+" HelpFrag");
-                return new HelpFragment();
-            }else if(position == DBV.chartCount+1) {
-//                NewFragment newFrag = new NewFragment();
-//				Log.i("Get Item", "num=" + position + " NewFrag");
-                return new NewFragment();
-            } else {
-				Log.i("Get Item", "num=" + position + "ChartFrag");
-                return chartFragList.get(position);
-            }
-		}
-		@Override
-		public int getCount(){
-			// Show number of pages equal to chart count +2 (help and new chart pages).
-			return DBV.chartCount+2;
-		}
-		@Override
-		public void destroyItem(ViewGroup container, int position, Object object){
-			Log.d("destroy","requestPage Destroy");
-			super.destroyItem(container,position,object);
 
-		}
-		@Override
-		public CharSequence getPageTitle(int position){
-			Locale l = Locale.getDefault();
-            if (position==0) {
-                return getString(R.string.title_help).toUpperCase(l);
-            }else if(position == DBV.chartCount+1) {
-                return getString(R.string.title_new).toUpperCase(l);
-            }else{
-                String name = "no name";
-                try {
-					name =  chartFragList.get(position).getChartName();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                return name;
-            }
-		}
-	}
+
     private class detailsThread extends Thread {
         public void run(){
 			int itemId;
@@ -536,7 +486,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
     }
     private class ImageThread extends Thread {
         public void run(int x){
-            Log.e("ImageThread","ImageThread-Chart"+x+"H*W="+height+"*"+width);
+            Log.e("ImageThread", "ImageThread-Chart"+x+"H*W="+height+"*"+width);
             try {
 				tempTitle = chartFragList.get(x).getChartName();
 				String url = chartFragList.get(x).getChartBgUrl();
@@ -550,7 +500,7 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.e("imageThread","Thread ended");
+            Log.e("imageThread", "Thread ended");
         }
 		public void run(String x){
 			Log.e("ImageThread","Thread2 started by "+x);
@@ -571,4 +521,52 @@ public class MainActivity extends FragmentActivity implements ChartFragment.clic
 			Log.e("imageThread","Thread ended");
 		}
     }
+	/*public class SectionsPagerAdapter extends FragmentPagerAdapter {
+		public SectionsPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+		@Override
+		public Fragment getItem(int position){
+			if (position == 0) {
+//                HelpFragment helpFrag = new HelpFragment();
+//				Log.i("Get Item","num="+position+" HelpFrag");
+				return new HelpFragment();
+			}else if(position == DBV.chartCount+1) {
+//                NewFragment newFrag = new NewFragment();
+//				Log.i("Get Item", "num=" + position + " NewFrag");
+				return new NewFragment();
+			} else {
+				Log.i("Get Item", "num=" + position + "ChartFrag");
+				return chartFragList.get(position);
+			}
+		}
+		@Override
+		public int getCount(){
+			// Show number of pages equal to chart count +2 (help and new chart pages).
+			return DBV.chartCount+2;
+		}
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object){
+			Log.d("destroy","requestPage Destroy");
+			super.destroyItem(container,position,object);
+
+		}
+		@Override
+		public CharSequence getPageTitle(int position){
+			Locale l = Locale.getDefault();
+			if (position==0) {
+				return getString(R.string.title_help).toUpperCase(l);
+			}else if(position == DBV.chartCount+1) {
+				return getString(R.string.title_new).toUpperCase(l);
+			}else{
+				String name = "no name";
+				try {
+					name =  chartFragList.get(position).getChartName();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				return name;
+			}
+		}
+	}*/
 }
